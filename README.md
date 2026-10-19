@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo-kwizz.webp" alt="Logo Kwizz & Co" width="260">
+</p>
+
 # Kwizz — PROJ531 Gestion de projet informatique
 
 **Kwizz** est une application Python de quizz : un **administrateur** crée des quizz (à la main ou depuis un
