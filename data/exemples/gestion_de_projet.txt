@@ -1,0 +1,52 @@
+# TITRE: Gestion de projet
+# DESCRIPTION: SCRUM, planification et outils vus en PROJ531
+# DUREE: 120
+# Quizz d'exemple écrit par Sami LAARFI — une seule bonne réponse (+) par question
+
+Q: Dans SCRUM, qui est responsable du backlog produit ?
+- Le Scrum Master
++ Le Product Owner
+- L'équipe de développement
+- Le client final
+
+Q: Comment s'appelle une itération de durée fixe dans SCRUM ?
+- Un jalon
+- Un lot de travaux
++ Un sprint
+- Une release
+
+Q: Que représente le chemin critique d'un réseau PERT ?
+- Les tâches les moins coûteuses
++ La suite de tâches sans marge qui fixe la durée minimale du projet
+- Les tâches confiées au chef de projet
+- Les tâches qui peuvent être supprimées
+
+Q: Quel diagramme représente les tâches sous forme de barres sur un axe du temps ?
+- Le PBS
+- Le MCD
++ Le diagramme de Gantt
+- Le diagramme de cas d'utilisation
+
+Q: Que décompose le WBS (Work Breakdown Structure) ?
+- Le budget en postes de dépense
++ Le travail à réaliser en lots et en tâches
+- Les données en entités et associations
+- L'équipe en sous-équipes
+
+Q: Selon le sujet PROJ531, quelle est la durée maximale d'une tâche ?
+- 1 heure
+- 1 semaine
++ 2 journées
+- 1 sprint
+
+Q: Quel outil sert à suivre l'attribution et l'avancement des tâches dans ce projet ?
+- GitHub Actions
++ Trello
+- draw.io
+- SQLite
+
+Q: Quelle réunion SCRUM sert à identifier ce qui peut être amélioré dans la façon de travailler ?
+- La revue de sprint
+- La planification de sprint
++ La rétrospective
+- Le daily
