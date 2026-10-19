@@ -1,0 +1,17 @@
+# TITRE: Les bases de Python
+# DESCRIPTION: Types, listes et fonctions
+
+Q: Quel est le type de l'expression 3 / 2 ?
+- int
++ float
+- str
+
+Q: Quel mot-clé définit une fonction ?
+- function
+- func
++ def
+
+Q: Que vaut len([1, 2, 3]) ?
+- 2
++ 3
+- 4

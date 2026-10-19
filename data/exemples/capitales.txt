@@ -1,0 +1,18 @@
+# TITRE: Capitales d'Europe
+# DESCRIPTION: Teste tes connaissances en géographie
+# DUREE: 60
+
+Q: Quelle est la capitale de l'Italie ?
+- Milan
++ Rome
+- Naples
+
+Q: Quelle est la capitale du Portugal ?
++ Lisbonne
+- Porto
+- Madrid
+
+Q: Quelle est la capitale de la Pologne ?
+- Cracovie
+- Prague
++ Varsovie
