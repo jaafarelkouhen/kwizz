@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="mcd-kwizz" name="MCD Kwizz">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===================== ENTITÉS ===================== -->
+        <mxCell id="e_util" value="&lt;b&gt;UTILISATEUR&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_utilisateur&lt;/u&gt;&lt;br&gt;login&lt;br&gt;mot_de_passe_hash&lt;br&gt;est_admin&lt;br&gt;date_creation" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="e_quizz" value="&lt;b&gt;QUIZZ&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_quizz&lt;/u&gt;&lt;br&gt;titre&lt;br&gt;description&lt;br&gt;duree_limite&lt;br&gt;date_creation" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="600" y="40" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="e_question" value="&lt;b&gt;QUESTION&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_question&lt;/u&gt;&lt;br&gt;enonce&lt;br&gt;ordre" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="900" y="330" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_choix" value="&lt;b&gt;CHOIX&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_choix&lt;/u&gt;&lt;br&gt;texte&lt;br&gt;est_correct" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="900" y="620" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="e_tent" value="&lt;b&gt;TENTATIVE&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_tentative&lt;/u&gt;&lt;br&gt;date_passage&lt;br&gt;score&lt;br&gt;nb_questions&lt;br&gt;duree_secondes" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="200" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== ASSOCIATIONS ===================== -->
+        <mxCell id="a_creer" value="&lt;b&gt;CRÉER&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="360" y="70" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_contenir" value="&lt;b&gt;CONTENIR&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="760" y="230" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_proposer" value="&lt;b&gt;PROPOSER&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="940" y="490" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_passer" value="&lt;b&gt;PASSER&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="80" y="350" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_porter" value="&lt;b&gt;PORTER SUR&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="380" y="350" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_repondre" value="&lt;b&gt;RÉPONDRE&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="520" y="630" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== LIENS + CARDINALITÉS ===================== -->
+        <mxCell id="l1" value="0,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_util" target="a_creer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" value="0,1" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_quizz" target="a_creer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" value="1,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_quizz" target="a_contenir">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l4" value="1,1" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_question" target="a_contenir">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l5" value="2,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_question" target="a_proposer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l6" value="1,1" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_choix" target="a_proposer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l7" value="0,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_util" target="a_passer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l8" value="1,1" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_tent" target="a_passer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l9" value="0,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_quizz" target="a_porter">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l10" value="1,1" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_tent" target="a_porter">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l11" value="0,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_tent" target="a_repondre">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l12" value="0,n" style="endArrow=none;html=1;fontStyle=1;" edge="1" parent="1" source="e_choix" target="a_repondre">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="titre" value="&lt;b&gt;MCD — Kwizz (Kwizz &amp;amp; Co)&lt;/b&gt;&lt;br&gt;Entités en bleu, associations en jaune, identifiants soulignés" style="text;html=1;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="770" width="500" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
