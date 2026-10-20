@@ -29,25 +29,50 @@ def pause():
     input("\n(Entrée pour continuer)")
 
 
-# ---------------------------------------------------------------- comptes
-def ecran_inscription(con):
-    login = demander("Login : ")
-    mdp = demander("Mot de passe : ")  # TODO : getpass.getpass pour masquer la saisie
-    try:
-        u = auth.inscrire(con, login, mdp)
-        print(f"Compte « {u.login} » créé. Vous pouvez vous connecter.")
-    except auth.ErreurAuth as e:
-        print(f"Erreur : {e}")
+# ---------------------------------------------------------------- comptes (US01, US02)
+BANNIERE = r"""
+  _  __        _
+ | |/ /_    __(_)________
+ | ' /\ \/\/ / |_  /_  /
+ | . \ \_/\_/| |/ / / /
+ |_|\_\      |_/___/___|   par Kwizz & Co
+"""
+ESSAIS_CONNEXION = 3
 
 
-def ecran_connexion(con) -> Utilisateur | None:
+def ecran_inscription(con) -> Utilisateur | None:
+    """Crée un compte puis connecte directement le nouvel utilisateur."""
+    print("\n--- Créer un compte ---")
+    print("  (login : 3 caractères minimum · mot de passe : 4 caractères minimum)")
     login = demander("Login : ")
-    mdp = demander("Mot de passe : ")
+    mdp = demander("Mot de passe : ")  # TODO (US14) : getpass.getpass pour masquer la saisie
+    if demander("Confirmez le mot de passe : ") != mdp:
+        print("Erreur : les deux mots de passe ne correspondent pas.")
+        return None
     try:
+        auth.inscrire(con, login, mdp)
+        print(f"Compte « {login} » créé. Bienvenue !")
         return auth.connecter(con, login, mdp)
     except auth.ErreurAuth as e:
         print(f"Erreur : {e}")
         return None
+
+
+def ecran_connexion(con) -> Utilisateur | None:
+    """Laisse ESSAIS_CONNEXION tentatives, puis revient à l'accueil."""
+    print("\n--- Connexion ---")
+    for essai in range(1, ESSAIS_CONNEXION + 1):
+        login = demander("Login : ")
+        mdp = demander("Mot de passe : ")
+        try:
+            user = auth.connecter(con, login, mdp)
+            print(f"Bonjour {user.login} !")
+            return user
+        except auth.ErreurAuth as e:
+            restants = ESSAIS_CONNEXION - essai
+            print(f"Erreur : {e}" + (f" ({restants} essai(s) restant(s))" if restants else ""))
+    print("Trop d'essais, retour à l'accueil.")
+    return None
 
 
 # ---------------------------------------------------------------- joueur
@@ -159,15 +184,14 @@ def session(con, user: Utilisateur):
 
 
 def lancer(con):
+    print(BANNIERE)
     print("Bienvenue dans Kwizz !")
     while True:
         n = menu("Accueil", ["Se connecter", "Créer un compte", "Quitter"])
-        if n == 1:
-            user = ecran_connexion(con)
+        if n in (1, 2):
+            user = ecran_connexion(con) if n == 1 else ecran_inscription(con)
             if user:
                 session(con, user)
-        elif n == 2:
-            ecran_inscription(con)
         else:
             print("À bientôt !")
             return
