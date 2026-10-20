@@ -18,6 +18,25 @@ def demander_entier(message: str, mini: int, maxi: int) -> int:
         print(f"  Entrez un nombre entre {mini} et {maxi}.")
 
 
+def demander_non_vide(message: str) -> str:
+    while True:
+        val = demander(message)
+        if val:
+            return val
+        print("  Ce champ ne peut pas être vide.")
+
+
+def demander_duree(message: str) -> int | None:
+    """Renvoie un nombre de secondes > 0, ou None si l'utilisateur appuie juste sur Entrée."""
+    while True:
+        val = demander(message)
+        if not val:
+            return None
+        if val.isdigit() and int(val) > 0:
+            return int(val)
+        print("  Entrez un nombre de secondes positif, ou appuyez sur Entrée.")
+
+
 def menu(titre: str, options: list[str]) -> int:
     print(f"\n=== {titre} ===")
     for i, opt in enumerate(options, 1):
@@ -130,17 +149,35 @@ def ecran_historique(con, user: Utilisateur):
 
 
 # ---------------------------------------------------------------- admin
+def afficher_recapitulatif(quizz: Quizz):
+    print(f"\n--- Récapitulatif : {quizz.titre} ---")
+    if quizz.description:
+        print(f"  {quizz.description}")
+    print(f"  Minuterie : {f'{quizz.duree_limite} s' if quizz.duree_limite else 'aucune'}")
+    for num, q in enumerate(quizz.questions, 1):
+        print(f"  Q{num}. {q.enonce}")
+        for c in q.choix:
+            print(f"      {'✔' if c.est_correct else ' '} {c.texte}")
+
+
 def ecran_creer_quizz(con, user: Utilisateur):
-    quizz = Quizz(demander("Titre : "), demander("Description : "), id_createur=user.id_utilisateur)
+    print("\n--- Créer un quizz ---")
+    quizz = Quizz(demander_non_vide("Titre : "), demander("Description (facultative) : "),
+                  demander_duree("Durée limite en secondes (Entrée = pas de minuterie) : "),
+                  id_createur=user.id_utilisateur)
     nb_q = demander_entier("Nombre de questions : ", 1, 100)
     for i in range(1, nb_q + 1):
-        q = Question(demander(f"\nÉnoncé de la question {i} : "))
+        q = Question(demander_non_vide(f"\nÉnoncé de la question {i} : "))
         nb_c = demander_entier("Nombre de choix : ", 2, 10)
         for j in range(1, nb_c + 1):
-            q.choix.append(Choix(demander(f"  Choix {j} : ")))
+            q.choix.append(Choix(demander_non_vide(f"  Choix {j} : ")))
         bonne = demander_entier("Numéro de la bonne réponse : ", 1, nb_c)
         q.choix[bonne - 1].est_correct = True
         quizz.questions.append(q)
+    afficher_recapitulatif(quizz)
+    if demander("Enregistrer ce quizz ? (o/n) ").lower() != "o":
+        print("Création annulée, rien n'a été enregistré.")
+        return
     try:
         qs.enregistrer_quizz(con, quizz)
         print(f"Quizz « {quizz.titre} » enregistré.")
