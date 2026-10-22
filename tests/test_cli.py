@@ -4,8 +4,10 @@ from quizz.ui import cli
 
 
 def simuler_saisies(monkeypatch, *saisies):
+    """Simule le clavier : input() ET la saisie masquée des mots de passe lisent la même liste."""
     reponses = iter(saisies)
     monkeypatch.setattr("builtins.input", lambda _message="": next(reponses))
+    monkeypatch.setattr(cli.getpass, "getpass", lambda _message="": next(reponses))
 
 
 def test_inscription_connecte_directement(con, monkeypatch):
