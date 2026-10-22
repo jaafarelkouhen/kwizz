@@ -1,4 +1,5 @@
 """Interface console : menus, saisies et affichages. Aucun SQL ici, on passe par les services."""
+import getpass
 import time
 
 from .. import auth, importer, quiz_service as qs
@@ -8,6 +9,11 @@ from ..models import Choix, Question, Quizz, Utilisateur
 # ---------------------------------------------------------------- utilitaires de saisie
 def demander(message: str) -> str:
     return input(message).strip()
+
+
+def demander_mot_de_passe(message: str) -> str:
+    """Saisie masquée : les caractères tapés ne s'affichent pas (US14)."""
+    return getpass.getpass(message)
 
 
 def demander_entier(message: str, mini: int, maxi: int) -> int:
@@ -64,8 +70,8 @@ def ecran_inscription(con) -> Utilisateur | None:
     print("\n--- Créer un compte ---")
     print("  (login : 3 caractères minimum · mot de passe : 4 caractères minimum)")
     login = demander("Login : ")
-    mdp = demander("Mot de passe : ")  # TODO (US14) : getpass.getpass pour masquer la saisie
-    if demander("Confirmez le mot de passe : ") != mdp:
+    mdp = demander_mot_de_passe("Mot de passe : ")
+    if demander_mot_de_passe("Confirmez le mot de passe : ") != mdp:
         print("Erreur : les deux mots de passe ne correspondent pas.")
         return None
     try:
@@ -77,15 +83,33 @@ def ecran_inscription(con) -> Utilisateur | None:
         return None
 
 
+def ecran_changer_mot_de_passe_obligatoire(con, user: Utilisateur):
+    """Premier login de l'admin par défaut : on n'avance pas sans nouveau mot de passe (US15)."""
+    print("\n⚠ Vous utilisez le mot de passe administrateur par défaut. Choisissez-en un nouveau.")
+    while True:
+        nouveau = demander_mot_de_passe("Nouveau mot de passe : ")
+        if demander_mot_de_passe("Confirmez le mot de passe : ") != nouveau:
+            print("Erreur : les deux mots de passe ne correspondent pas.")
+            continue
+        try:
+            auth.changer_mot_de_passe(con, user.id_utilisateur, nouveau)
+            print("Mot de passe modifié.")
+            return
+        except auth.ErreurAuth as e:
+            print(f"Erreur : {e}")
+
+
 def ecran_connexion(con) -> Utilisateur | None:
     """Laisse ESSAIS_CONNEXION tentatives, puis revient à l'accueil."""
     print("\n--- Connexion ---")
     for essai in range(1, ESSAIS_CONNEXION + 1):
         login = demander("Login : ")
-        mdp = demander("Mot de passe : ")
+        mdp = demander_mot_de_passe("Mot de passe : ")
         try:
             user = auth.connecter(con, login, mdp)
             print(f"Bonjour {user.login} !")
+            if auth.utilise_mot_de_passe_par_defaut(con, user):
+                ecran_changer_mot_de_passe_obligatoire(con, user)
             return user
         except auth.ErreurAuth as e:
             restants = ESSAIS_CONNEXION - essai
