@@ -37,6 +37,7 @@ class Quizz:
     questions: list[Question] = field(default_factory=list)
     id_quizz: Optional[int] = None
     id_createur: Optional[int] = None
+    source: str = "manuel"  # manuel | fichier | ia
 
 
 @dataclass

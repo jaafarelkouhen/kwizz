@@ -24,6 +24,7 @@ erDiagram
         string description
         int duree_limite "secondes, vide = pas de minuterie"
         datetime date_creation
+        string source "manuel, fichier ou ia"
     }
     QUESTION {
         int id_question PK
@@ -87,7 +88,7 @@ Lecture : « un(e) X participe **au minimum** … et **au maximum** … fois à 
 
 ```text
 UTILISATEUR (id_utilisateur, login, mot_de_passe_hash, est_admin, date_creation)
-QUIZZ       (id_quizz, titre, description, duree_limite, date_creation, #id_createur)
+QUIZZ       (id_quizz, titre, description, duree_limite, date_creation, source, #id_createur)
 QUESTION    (id_question, enonce, ordre, #id_quizz)
 CHOIX       (id_choix, texte, est_correct, #id_question)
 TENTATIVE   (id_tentative, date_passage, score, nb_questions, duree_secondes, #id_utilisateur, #id_quizz)
@@ -97,5 +98,6 @@ Clé primaire = premier attribut (couple pour REPONSE) · `#` = clé étrangère
 
 Ce MLD correspond exactement au schéma SQL de `quizz/database.py`.
 
-## Évolution prévue (sprint IA)
-Ajouter `source` (manuel / fichier / ia) à QUIZZ, tâche T55. Il faudra alors mettre ce MCD à jour.
+## Évolution (sprint IA, T55)
+Attribut `source` ajouté à QUIZZ : `manuel` (créé dans l'appli), `fichier` (importé) ou `ia` (généré).
+Une base créée avant cette version reçoit la colonne automatiquement au lancement (`database.migrer`).

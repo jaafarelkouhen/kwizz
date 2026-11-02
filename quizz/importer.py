@@ -106,6 +106,6 @@ def lire_quizz_json(chemin: str | Path) -> Quizz:
 
 def lire_quizz(chemin: str | Path) -> Quizz:
     """Choisit le bon lecteur selon l'extension : .json → JSON, sinon format texte."""
-    if Path(chemin).suffix.lower() == ".json":
-        return lire_quizz_json(chemin)
-    return lire_quizz_texte(chemin)
+    quizz = lire_quizz_json(chemin) if Path(chemin).suffix.lower() == ".json" else lire_quizz_texte(chemin)
+    quizz.source = "fichier"
+    return quizz

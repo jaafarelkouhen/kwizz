@@ -127,7 +127,8 @@ def choisir_quizz(con) -> Quizz | None:
     print("\nQuizz disponibles :")
     for i, q in enumerate(liste, 1):
         timer = f" (⏱ {q.duree_limite}s)" if q.duree_limite else ""
-        print(f"  {i}. {q.titre}{timer} — {q.description}")
+        origine = " 🤖" if q.source == "ia" else ""
+        print(f"  {i}. {q.titre}{timer}{origine} — {q.description}")
     n = demander_entier("Numéro du quizz (0 = retour) : ", 0, len(liste))
     return None if n == 0 else qs.charger_quizz(con, liste[n - 1].id_quizz)
 
