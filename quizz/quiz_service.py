@@ -32,8 +32,8 @@ def enregistrer_quizz(con: sqlite3.Connection, quizz: Quizz) -> int:
     valider(quizz)
     with con:  # transaction : tout ou rien
         cur = con.execute(
-            "INSERT INTO quizz (titre, description, duree_limite, id_createur) VALUES (?, ?, ?, ?)",
-            (quizz.titre.strip(), quizz.description, quizz.duree_limite, quizz.id_createur),
+            "INSERT INTO quizz (titre, description, duree_limite, id_createur, source) VALUES (?, ?, ?, ?, ?)",
+            (quizz.titre.strip(), quizz.description, quizz.duree_limite, quizz.id_createur, quizz.source),
         )
         quizz.id_quizz = cur.lastrowid
         _inserer_questions(con, quizz)
@@ -57,9 +57,14 @@ def _inserer_questions(con: sqlite3.Connection, quizz: Quizz) -> None:
 
 
 # ---------------------------------------------------------------- lecture (US04)
+def _quizz_depuis_ligne(r: sqlite3.Row) -> Quizz:
+    return Quizz(r["titre"], r["description"] or "", r["duree_limite"], [], r["id_quizz"], r["id_createur"],
+                 r["source"])
+
+
 def lister_quizz(con: sqlite3.Connection) -> list[Quizz]:
     rows = con.execute("SELECT * FROM quizz ORDER BY titre").fetchall()
-    return [Quizz(r["titre"], r["description"] or "", r["duree_limite"], [], r["id_quizz"], r["id_createur"])
+    return [_quizz_depuis_ligne(r)
             for r in rows]
 
 
@@ -67,7 +72,7 @@ def charger_quizz(con: sqlite3.Connection, id_quizz: int) -> Quizz:
     r = con.execute("SELECT * FROM quizz WHERE id_quizz = ?", (id_quizz,)).fetchone()
     if r is None:
         raise ErreurQuizz(f"Quizz {id_quizz} introuvable.")
-    quizz = Quizz(r["titre"], r["description"] or "", r["duree_limite"], [], r["id_quizz"], r["id_createur"])
+    quizz = _quizz_depuis_ligne(r)
     for rq in con.execute("SELECT * FROM question WHERE id_quizz = ? ORDER BY ordre", (id_quizz,)):
         choix = [Choix(rc["texte"], bool(rc["est_correct"]), rc["id_choix"])
                  for rc in con.execute("SELECT * FROM choix WHERE id_question = ? ORDER BY id_choix",

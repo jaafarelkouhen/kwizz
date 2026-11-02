@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS quizz (
     description   TEXT,
     duree_limite  INTEGER,
     date_creation TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    id_createur   INTEGER REFERENCES utilisateur(id_utilisateur) ON DELETE SET NULL
+    id_createur   INTEGER REFERENCES utilisateur(id_utilisateur) ON DELETE SET NULL,
+    source        TEXT NOT NULL DEFAULT 'manuel' CHECK (source IN ('manuel', 'fichier', 'ia'))
 );
 
 CREATE TABLE IF NOT EXISTS question (

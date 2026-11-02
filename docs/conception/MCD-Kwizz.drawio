@@ -9,8 +9,8 @@
         <mxCell id="e_util" value="&lt;b&gt;UTILISATEUR&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_utilisateur&lt;/u&gt;&lt;br&gt;login&lt;br&gt;mot_de_passe_hash&lt;br&gt;est_admin&lt;br&gt;date_creation" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="40" y="40" width="200" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="e_quizz" value="&lt;b&gt;QUIZZ&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_quizz&lt;/u&gt;&lt;br&gt;titre&lt;br&gt;description&lt;br&gt;duree_limite&lt;br&gt;date_creation" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-          <mxGeometry x="600" y="40" width="200" height="130" as="geometry" />
+        <mxCell id="e_quizz" value="&lt;b&gt;QUIZZ&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_quizz&lt;/u&gt;&lt;br&gt;titre&lt;br&gt;description&lt;br&gt;duree_limite&lt;br&gt;date_creation&lt;br&gt;source" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="600" y="40" width="200" height="150" as="geometry" />
         </mxCell>
         <mxCell id="e_question" value="&lt;b&gt;QUESTION&lt;/b&gt;&lt;hr&gt;&lt;u&gt;id_question&lt;/u&gt;&lt;br&gt;enonce&lt;br&gt;ordre" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="900" y="330" width="200" height="100" as="geometry" />

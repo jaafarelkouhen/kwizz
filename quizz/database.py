@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS quizz (
     description   TEXT,
     duree_limite  INTEGER,
     date_creation TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    id_createur   INTEGER REFERENCES utilisateur(id_utilisateur) ON DELETE SET NULL
+    id_createur   INTEGER REFERENCES utilisateur(id_utilisateur) ON DELETE SET NULL,
+    source        TEXT NOT NULL DEFAULT 'manuel' CHECK (source IN ('manuel', 'fichier', 'ia'))
 );
 
 CREATE TABLE IF NOT EXISTS question (
@@ -69,4 +70,15 @@ def connexion(chemin=CHEMIN_PAR_DEFAUT) -> sqlite3.Connection:
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA foreign_keys = ON")
     con.executescript(SCHEMA)
+    migrer(con)
     return con
+
+
+def migrer(con: sqlite3.Connection) -> None:
+    """Met à jour une base créée par une version précédente de Kwizz (CREATE TABLE IF NOT EXISTS
+    ne modifie pas une table qui existe déjà)."""
+    colonnes = {r["name"] for r in con.execute("PRAGMA table_info(quizz)")}
+    if "source" not in colonnes:  # ajoutée au sprint IA (T55)
+        con.execute("ALTER TABLE quizz ADD COLUMN source TEXT NOT NULL DEFAULT 'manuel' "
+                    "CHECK (source IN ('manuel', 'fichier', 'ia'))")
+        con.commit()
