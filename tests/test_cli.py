@@ -39,3 +39,14 @@ def test_connexion_bloquee_apres_trois_essais(con, monkeypatch, capsys):
     simuler_saisies(monkeypatch, *["bob", "faux"] * cli.ESSAIS_CONNEXION)
     assert cli.ecran_connexion(con) is None
     assert "Trop d'essais" in capsys.readouterr().out
+
+
+def test_premiere_connexion_admin_force_le_changement(con, monkeypatch, capsys):
+    auth.creer_admin_par_defaut(con)
+    simuler_saisies(monkeypatch, "admin", "admin",          # connexion
+                    "abc", "abc",                            # trop court → refusé
+                    "solide1", "solide2",                    # confirmation différente → refusé
+                    "solide1", "solide1")                    # accepté
+    assert cli.ecran_connexion(con).est_admin
+    assert auth.connecter(con, "admin", "solide1")
+    assert "mot de passe administrateur par défaut" in capsys.readouterr().out

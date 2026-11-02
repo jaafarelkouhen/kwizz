@@ -83,6 +83,22 @@ def ecran_inscription(con) -> Utilisateur | None:
         return None
 
 
+def ecran_changer_mot_de_passe_obligatoire(con, user: Utilisateur):
+    """Premier login de l'admin par défaut : on n'avance pas sans nouveau mot de passe (US15)."""
+    print("\n⚠ Vous utilisez le mot de passe administrateur par défaut. Choisissez-en un nouveau.")
+    while True:
+        nouveau = demander_mot_de_passe("Nouveau mot de passe : ")
+        if demander_mot_de_passe("Confirmez le mot de passe : ") != nouveau:
+            print("Erreur : les deux mots de passe ne correspondent pas.")
+            continue
+        try:
+            auth.changer_mot_de_passe(con, user.id_utilisateur, nouveau)
+            print("Mot de passe modifié.")
+            return
+        except auth.ErreurAuth as e:
+            print(f"Erreur : {e}")
+
+
 def ecran_connexion(con) -> Utilisateur | None:
     """Laisse ESSAIS_CONNEXION tentatives, puis revient à l'accueil."""
     print("\n--- Connexion ---")
@@ -92,6 +108,8 @@ def ecran_connexion(con) -> Utilisateur | None:
         try:
             user = auth.connecter(con, login, mdp)
             print(f"Bonjour {user.login} !")
+            if auth.utilise_mot_de_passe_par_defaut(con, user):
+                ecran_changer_mot_de_passe_obligatoire(con, user)
             return user
         except auth.ErreurAuth as e:
             restants = ESSAIS_CONNEXION - essai
