@@ -34,19 +34,24 @@ def enregistrer_quizz(con: sqlite3.Connection, quizz: Quizz) -> int:
             (quizz.titre.strip(), quizz.description, quizz.duree_limite, quizz.id_createur),
         )
         quizz.id_quizz = cur.lastrowid
-        for ordre, q in enumerate(quizz.questions):
-            cur = con.execute(
-                "INSERT INTO question (enonce, ordre, id_quizz) VALUES (?, ?, ?)",
-                (q.enonce, ordre, quizz.id_quizz),
-            )
-            q.id_question, q.ordre = cur.lastrowid, ordre
-            for c in q.choix:
-                cur = con.execute(
-                    "INSERT INTO choix (texte, est_correct, id_question) VALUES (?, ?, ?)",
-                    (c.texte, int(c.est_correct), q.id_question),
-                )
-                c.id_choix = cur.lastrowid
+        _inserer_questions(con, quizz)
     return quizz.id_quizz
+
+
+def _inserer_questions(con: sqlite3.Connection, quizz: Quizz) -> None:
+    """Insère les questions et leurs choix (à appeler à l'intérieur d'une transaction)."""
+    for ordre, q in enumerate(quizz.questions):
+        cur = con.execute(
+            "INSERT INTO question (enonce, ordre, id_quizz) VALUES (?, ?, ?)",
+            (q.enonce, ordre, quizz.id_quizz),
+        )
+        q.id_question, q.ordre = cur.lastrowid, ordre
+        for c in q.choix:
+            cur = con.execute(
+                "INSERT INTO choix (texte, est_correct, id_question) VALUES (?, ?, ?)",
+                (c.texte, int(c.est_correct), q.id_question),
+            )
+            c.id_choix = cur.lastrowid
 
 
 # ---------------------------------------------------------------- lecture (US04)
@@ -116,8 +121,23 @@ def supprimer_quizz(con: sqlite3.Connection, id_quizz: int) -> None:
 
 
 def modifier_quizz(con: sqlite3.Connection, quizz: Quizz) -> None:
-    """TODO (US08) : modifier titre / description / questions d'un quizz existant."""
-    raise NotImplementedError
+    """Remplace titre, description, durée et questions d'un quizz existant (US08).
+
+    Les tentatives passées gardent leur score, mais le détail des choix cochés est perdu,
+    car les anciennes questions et leurs choix sont supprimés puis recréés.
+    """
+    if quizz.id_quizz is None:
+        raise ErreurQuizz("Ce quizz n'est pas encore enregistré : utiliser enregistrer_quizz.")
+    valider(quizz)
+    with con:  # transaction : si une étape échoue, le quizz reste tel qu'avant
+        cur = con.execute(
+            "UPDATE quizz SET titre = ?, description = ?, duree_limite = ? WHERE id_quizz = ?",
+            (quizz.titre.strip(), quizz.description, quizz.duree_limite, quizz.id_quizz),
+        )
+        if cur.rowcount == 0:
+            raise ErreurQuizz(f"Quizz {quizz.id_quizz} introuvable.")
+        con.execute("DELETE FROM question WHERE id_quizz = ?", (quizz.id_quizz,))
+        _inserer_questions(con, quizz)
 
 
 # ---------------------------------------------------------------- bonus (US12)
