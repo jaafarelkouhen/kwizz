@@ -172,5 +172,17 @@ def melanger(quizz: Quizz, generateur: random.Random | None = None) -> Quizz:
 
 # ---------------------------------------------------------------- bonus (US12)
 def classement(con: sqlite3.Connection, id_quizz: int, limite: int = 10) -> list[tuple[str, int]]:
-    """TODO (US12) : meilleur score de chaque joueur sur ce quizz, trié décroissant."""
-    raise NotImplementedError
+    """Meilleur score de chaque joueur sur ce quizz, du meilleur au moins bon.
+
+    À score égal, le joueur qui l'a obtenu en premier est devant.
+    """
+    rows = con.execute(
+        "SELECT u.login, MAX(t.score) AS meilleur, MIN(t.date_passage) AS premiere_fois "
+        "FROM tentative t JOIN utilisateur u USING (id_utilisateur) "
+        "WHERE t.id_quizz = ? "
+        "GROUP BY u.id_utilisateur "
+        "ORDER BY meilleur DESC, premiere_fois, u.login "
+        "LIMIT ?",
+        (id_quizz, limite),
+    ).fetchall()
+    return [(r["login"], r["meilleur"]) for r in rows]
