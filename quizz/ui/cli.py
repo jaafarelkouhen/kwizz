@@ -180,6 +180,22 @@ def ecran_historique(con, user: Utilisateur):
     pause()
 
 
+def ecran_classement(con, user: Utilisateur):
+    quizz = choisir_quizz(con)
+    if quizz is None:
+        return
+    lignes = qs.classement(con, quizz.id_quizz)
+    print(f"\n🏆 Classement — {quizz.titre}")
+    if not lignes:
+        print("  Personne n'a encore joué à ce quizz.")
+    medailles = ["🥇", "🥈", "🥉"]
+    for rang, (login, score) in enumerate(lignes, 1):
+        icone = medailles[rang - 1] if rang <= 3 else f"{rang}."
+        moi = "  ← vous" if login == user.login else ""
+        print(f"  {icone:<3} {login:<20} {score}/{len(quizz.questions)}{moi}")
+    pause()
+
+
 # ---------------------------------------------------------------- admin
 def afficher_recapitulatif(quizz: Quizz):
     print(f"\n--- Récapitulatif : {quizz.titre} ---")
@@ -286,7 +302,8 @@ def ecran_supprimer(con, user: Utilisateur):
 
 # ---------------------------------------------------------------- boucles principales
 def session(con, user: Utilisateur):
-    actions = [("Passer un quizz", ecran_jouer), ("Mon historique", ecran_historique)]
+    actions = [("Passer un quizz", ecran_jouer), ("Mon historique", ecran_historique),
+               ("Classement d'un quizz", ecran_classement)]
     if user.est_admin:
         actions += [("Créer un quizz", ecran_creer_quizz),
                     ("Importer un quizz (texte ou JSON)", ecran_importer),
