@@ -1,0 +1,25 @@
+{
+  "format": "kwizz-quizz",
+  "version": 1,
+  "titre": "Capitales du monde",
+  "description": "Exemple au format JSON",
+  "duree_limite": null,
+  "questions": [
+    {
+      "enonce": "Quelle est la capitale du Japon ?",
+      "choix": [
+        {"texte": "Osaka", "correct": false},
+        {"texte": "Tokyo", "correct": true},
+        {"texte": "Kyoto", "correct": false}
+      ]
+    },
+    {
+      "enonce": "Quelle est la capitale du Canada ?",
+      "choix": [
+        {"texte": "Ottawa", "correct": true},
+        {"texte": "Toronto", "correct": false},
+        {"texte": "Montréal", "correct": false}
+      ]
+    }
+  ]
+}

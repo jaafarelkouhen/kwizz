@@ -216,9 +216,9 @@ def ecran_creer_quizz(con, user: Utilisateur):
 
 
 def ecran_importer(con, user: Utilisateur):
-    chemin = demander("Chemin du fichier texte : ").strip('"')
+    chemin = demander("Chemin du fichier (.txt ou .json) : ").strip('"')
     try:
-        quizz = importer.lire_quizz_texte(chemin)
+        quizz = importer.lire_quizz(chemin)
         quizz.id_createur = user.id_utilisateur
         qs.enregistrer_quizz(con, quizz)
         print(f"Quizz « {quizz.titre} » importé ({len(quizz.questions)} questions).")
@@ -226,6 +226,19 @@ def ecran_importer(con, user: Utilisateur):
         print("Fichier introuvable.")
     except (importer.ErreurFormat, qs.ErreurQuizz) as e:
         print(f"Erreur : {e}")
+
+
+def ecran_exporter(con, user: Utilisateur):
+    quizz = choisir_quizz(con)
+    if quizz is None:
+        return
+    nom_defaut = f"{quizz.titre}.json".replace(" ", "_")
+    chemin = demander(f"Fichier de destination [{nom_defaut}] : ").strip('"') or nom_defaut
+    try:
+        importer.exporter_json(quizz, chemin)
+        print(f"Quizz exporté dans {chemin}")
+    except OSError as e:
+        print(f"Erreur d'écriture : {e}")
 
 
 def ecran_modifier(con, user: Utilisateur):
@@ -268,7 +281,8 @@ def session(con, user: Utilisateur):
     actions = [("Passer un quizz", ecran_jouer), ("Mon historique", ecran_historique)]
     if user.est_admin:
         actions += [("Créer un quizz", ecran_creer_quizz),
-                    ("Importer un quizz (fichier texte)", ecran_importer),
+                    ("Importer un quizz (texte ou JSON)", ecran_importer),
+                    ("Exporter un quizz en JSON", ecran_exporter),
                     ("Modifier un quizz", ecran_modifier),
                     ("Supprimer un quizz", ecran_supprimer)]
     while True:
