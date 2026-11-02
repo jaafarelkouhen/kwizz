@@ -1,7 +1,9 @@
-"""Logique métier des quizz : création, lecture, correction, historique (US03 à US08).
+"""Logique métier des quizz : création, lecture, correction, historique (US03 à US13).
 
 Ce module ne fait aucun print() / input() : l'interface (console ou graphique) l'appelle.
 """
+import copy
+import random
 import sqlite3
 
 from .models import Choix, Question, Quizz, Tentative
@@ -138,6 +140,34 @@ def modifier_quizz(con: sqlite3.Connection, quizz: Quizz) -> None:
             raise ErreurQuizz(f"Quizz {quizz.id_quizz} introuvable.")
         con.execute("DELETE FROM question WHERE id_quizz = ?", (quizz.id_quizz,))
         _inserer_questions(con, quizz)
+
+
+# ---------------------------------------------------------------- minuterie (US09)
+def temps_restant(quizz: Quizz, secondes_ecoulees: float) -> float | None:
+    """Secondes restantes (jamais négatif), ou None si le quizz n'a pas de minuterie."""
+    if not quizz.duree_limite:
+        return None
+    return max(0.0, quizz.duree_limite - secondes_ecoulees)
+
+
+def temps_ecoule(quizz: Quizz, secondes_ecoulees: float) -> bool:
+    restant = temps_restant(quizz, secondes_ecoulees)
+    return restant is not None and restant <= 0
+
+
+# ---------------------------------------------------------------- ordre aléatoire (US13)
+def melanger(quizz: Quizz, generateur: random.Random | None = None) -> Quizz:
+    """Copie du quizz avec questions et choix dans un ordre aléatoire.
+
+    La correction se fait par identifiants, donc l'ordre d'affichage ne change pas le score.
+    `generateur` permet aux tests d'obtenir toujours le même ordre (random.Random(graine)).
+    """
+    generateur = generateur or random.Random()
+    copie = copy.deepcopy(quizz)
+    generateur.shuffle(copie.questions)
+    for q in copie.questions:
+        generateur.shuffle(q.choix)
+    return copie
 
 
 # ---------------------------------------------------------------- bonus (US12)

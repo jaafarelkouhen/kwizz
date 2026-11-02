@@ -8,6 +8,7 @@ Format texte (voir README) :
     - Milan
     + Rome
 """
+import json
 from pathlib import Path
 
 from .models import Choix, Question, Quizz
@@ -49,11 +50,62 @@ def lire_quizz_texte(chemin: str | Path) -> Quizz:
     return quizz
 
 
+# ---------------------------------------------------------------- JSON (US10, voir docs/conception/formats.md)
+FORMAT_JSON, VERSION_JSON = "kwizz-quizz", 1
+
+
+def quizz_vers_dict(quizz: Quizz) -> dict:
+    """Sans les identifiants de la base : le fichier est importable dans n'importe quelle installation."""
+    return {
+        "format": FORMAT_JSON,
+        "version": VERSION_JSON,
+        "titre": quizz.titre,
+        "description": quizz.description,
+        "duree_limite": quizz.duree_limite,
+        "questions": [
+            {"enonce": q.enonce, "choix": [{"texte": c.texte, "correct": c.est_correct} for c in q.choix]}
+            for q in quizz.questions
+        ],
+    }
+
+
+def quizz_depuis_dict(donnees: dict) -> Quizz:
+    """Construit un Quizz depuis un dict au format kwizz-quizz (fichier JSON ou réponse de l'IA)."""
+    if not isinstance(donnees, dict) or donnees.get("format") != FORMAT_JSON:
+        raise ErreurFormat(f"Ce n'est pas un quizz Kwizz (clé \"format\": \"{FORMAT_JSON}\" attendue).")
+    if donnees.get("version") != VERSION_JSON:
+        raise ErreurFormat(f"Version {donnees.get('version')!r} non prise en charge (attendu : {VERSION_JSON}).")
+    try:
+        duree = donnees.get("duree_limite")
+        if duree is not None and (not isinstance(duree, int) or duree <= 0):
+            raise ErreurFormat("\"duree_limite\" doit être un entier positif ou null.")
+        quizz = Quizz(str(donnees["titre"]).strip(), str(donnees.get("description") or ""), duree)
+        for num, q in enumerate(donnees["questions"], 1):
+            question = Question(str(q["enonce"]).strip())
+            for c in q["choix"]:
+                question.choix.append(Choix(str(c["texte"]).strip(), c.get("correct") is True))
+            quizz.questions.append(question)
+    except (KeyError, TypeError) as e:
+        raise ErreurFormat(f"Structure JSON invalide : {e}") from e
+    return quizz
+
+
 def exporter_json(quizz: Quizz, chemin: str | Path) -> None:
-    """TODO (US10) : écrire le quizz au format JSON (json.dump + dataclasses.asdict)."""
-    raise NotImplementedError
+    with open(chemin, "w", encoding="utf-8") as f:
+        json.dump(quizz_vers_dict(quizz), f, ensure_ascii=False, indent=2)
 
 
 def lire_quizz_json(chemin: str | Path) -> Quizz:
-    """TODO (US10) : relire un quizz exporté en JSON."""
-    raise NotImplementedError
+    try:
+        with open(chemin, encoding="utf-8") as f:
+            donnees = json.load(f)
+    except json.JSONDecodeError as e:
+        raise ErreurFormat(f"JSON mal formé (ligne {e.lineno}) : {e.msg}") from e
+    return quizz_depuis_dict(donnees)
+
+
+def lire_quizz(chemin: str | Path) -> Quizz:
+    """Choisit le bon lecteur selon l'extension : .json → JSON, sinon format texte."""
+    if Path(chemin).suffix.lower() == ".json":
+        return lire_quizz_json(chemin)
+    return lire_quizz_texte(chemin)

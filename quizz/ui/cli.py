@@ -136,18 +136,26 @@ def ecran_jouer(con, user: Utilisateur):
     quizz = choisir_quizz(con)
     if quizz is None:
         return
-    print(f"\n### {quizz.titre} — {len(quizz.questions)} question(s) ###")
-    # TODO (US13) : random.shuffle(quizz.questions) si option activée
-    # TODO (US09) : arrêter le quizz si quizz.duree_limite est dépassée
+    if demander("Questions dans un ordre aléatoire ? (o/n) ").lower() == "o":
+        quizz = qs.melanger(quizz)
+    minuterie = f" — ⏱ {quizz.duree_limite} s" if quizz.duree_limite else ""
+    print(f"\n### {quizz.titre} — {len(quizz.questions)} question(s){minuterie} ###")
     reponses: dict[int, set[int]] = {}
     debut = time.monotonic()
     for num, q in enumerate(quizz.questions, 1):
-        print(f"\nQ{num}. {q.enonce}")
+        restant = qs.temps_restant(quizz, time.monotonic() - debut)
+        print(f"\nQ{num}. {q.enonce}" + (f"  ({int(restant)} s)" if restant is not None else ""))
         for i, c in enumerate(q.choix, 1):
             print(f"   {i}) {c.texte}")
         n = demander_entier("Votre réponse : ", 1, len(q.choix))
+        # input() ne peut pas être interrompu : on vérifie le temps après chaque réponse (US09)
+        if qs.temps_ecoule(quizz, time.monotonic() - debut):
+            print("⏰ Temps écoulé ! Cette réponse et les questions restantes comptent comme fausses.")
+            break
         reponses[q.id_question] = {q.choix[n - 1].id_choix}
     duree = int(time.monotonic() - debut)
+    if quizz.duree_limite:
+        duree = min(duree, quizz.duree_limite)
 
     t = qs.enregistrer_tentative(con, user.id_utilisateur, quizz, reponses, duree)
     afficher_correction(quizz, reponses)
@@ -216,9 +224,9 @@ def ecran_creer_quizz(con, user: Utilisateur):
 
 
 def ecran_importer(con, user: Utilisateur):
-    chemin = demander("Chemin du fichier texte : ").strip('"')
+    chemin = demander("Chemin du fichier (.txt ou .json) : ").strip('"')
     try:
-        quizz = importer.lire_quizz_texte(chemin)
+        quizz = importer.lire_quizz(chemin)
         quizz.id_createur = user.id_utilisateur
         qs.enregistrer_quizz(con, quizz)
         print(f"Quizz « {quizz.titre} » importé ({len(quizz.questions)} questions).")
@@ -226,6 +234,19 @@ def ecran_importer(con, user: Utilisateur):
         print("Fichier introuvable.")
     except (importer.ErreurFormat, qs.ErreurQuizz) as e:
         print(f"Erreur : {e}")
+
+
+def ecran_exporter(con, user: Utilisateur):
+    quizz = choisir_quizz(con)
+    if quizz is None:
+        return
+    nom_defaut = f"{quizz.titre}.json".replace(" ", "_")
+    chemin = demander(f"Fichier de destination [{nom_defaut}] : ").strip('"') or nom_defaut
+    try:
+        importer.exporter_json(quizz, chemin)
+        print(f"Quizz exporté dans {chemin}")
+    except OSError as e:
+        print(f"Erreur d'écriture : {e}")
 
 
 def ecran_modifier(con, user: Utilisateur):
@@ -268,7 +289,8 @@ def session(con, user: Utilisateur):
     actions = [("Passer un quizz", ecran_jouer), ("Mon historique", ecran_historique)]
     if user.est_admin:
         actions += [("Créer un quizz", ecran_creer_quizz),
-                    ("Importer un quizz (fichier texte)", ecran_importer),
+                    ("Importer un quizz (texte ou JSON)", ecran_importer),
+                    ("Exporter un quizz en JSON", ecran_exporter),
                     ("Modifier un quizz", ecran_modifier),
                     ("Supprimer un quizz", ecran_supprimer)]
     while True:
