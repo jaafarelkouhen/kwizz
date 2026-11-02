@@ -184,11 +184,8 @@ def afficher_recapitulatif(quizz: Quizz):
             print(f"      {'✔' if c.est_correct else ' '} {c.texte}")
 
 
-def ecran_creer_quizz(con, user: Utilisateur):
-    print("\n--- Créer un quizz ---")
-    quizz = Quizz(demander_non_vide("Titre : "), demander("Description (facultative) : "),
-                  demander_duree("Durée limite en secondes (Entrée = pas de minuterie) : "),
-                  id_createur=user.id_utilisateur)
+def saisir_questions() -> list[Question]:
+    questions = []
     nb_q = demander_entier("Nombre de questions : ", 1, 100)
     for i in range(1, nb_q + 1):
         q = Question(demander_non_vide(f"\nÉnoncé de la question {i} : "))
@@ -197,7 +194,16 @@ def ecran_creer_quizz(con, user: Utilisateur):
             q.choix.append(Choix(demander_non_vide(f"  Choix {j} : ")))
         bonne = demander_entier("Numéro de la bonne réponse : ", 1, nb_c)
         q.choix[bonne - 1].est_correct = True
-        quizz.questions.append(q)
+        questions.append(q)
+    return questions
+
+
+def ecran_creer_quizz(con, user: Utilisateur):
+    print("\n--- Créer un quizz ---")
+    quizz = Quizz(demander_non_vide("Titre : "), demander("Description (facultative) : "),
+                  demander_duree("Durée limite en secondes (Entrée = pas de minuterie) : "),
+                  id_createur=user.id_utilisateur)
+    quizz.questions = saisir_questions()
     afficher_recapitulatif(quizz)
     if demander("Enregistrer ce quizz ? (o/n) ").lower() != "o":
         print("Création annulée, rien n'a été enregistré.")
@@ -222,6 +228,34 @@ def ecran_importer(con, user: Utilisateur):
         print(f"Erreur : {e}")
 
 
+def ecran_modifier(con, user: Utilisateur):
+    """US08 : Entrée = garder la valeur actuelle."""
+    quizz = choisir_quizz(con)
+    if quizz is None:
+        return
+    afficher_recapitulatif(quizz)
+    print("\n(Entrée = garder la valeur actuelle)")
+    quizz.titre = demander(f"Titre [{quizz.titre}] : ") or quizz.titre
+    quizz.description = demander(f"Description [{quizz.description}] : ") or quizz.description
+    actuelle = f"{quizz.duree_limite} s" if quizz.duree_limite else "aucune"
+    reponse = demander(f"Durée limite en secondes [{actuelle}] (0 = supprimer la minuterie) : ")
+    if reponse == "0":
+        quizz.duree_limite = None
+    elif reponse.isdigit():
+        quizz.duree_limite = int(reponse)
+    if demander("Remplacer toutes les questions ? (o/n) ").lower() == "o":
+        quizz.questions = saisir_questions()
+    afficher_recapitulatif(quizz)
+    if demander("Enregistrer les modifications ? (o/n) ").lower() != "o":
+        print("Modification annulée.")
+        return
+    try:
+        qs.modifier_quizz(con, quizz)
+        print(f"Quizz « {quizz.titre} » modifié.")
+    except qs.ErreurQuizz as e:
+        print(f"Erreur : {e}")
+
+
 def ecran_supprimer(con, user: Utilisateur):
     quizz = choisir_quizz(con)
     if quizz and demander(f"Supprimer « {quizz.titre} » ? (o/n) ").lower() == "o":
@@ -235,6 +269,7 @@ def session(con, user: Utilisateur):
     if user.est_admin:
         actions += [("Créer un quizz", ecran_creer_quizz),
                     ("Importer un quizz (fichier texte)", ecran_importer),
+                    ("Modifier un quizz", ecran_modifier),
                     ("Supprimer un quizz", ecran_supprimer)]
     while True:
         role = "admin" if user.est_admin else "joueur"
