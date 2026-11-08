@@ -10,6 +10,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
 from .. import auth, importer, quiz_service as qs
+from ..ia import client as client_ia, explications, generateur, recommandation
 from ..models import Quizz, Tentative
 
 LOGO = Path(__file__).resolve().parent / "logo.png"
@@ -169,6 +170,9 @@ class EcranListe(Ecran):
             tk.Button(admin, text="Importer…", width=12, command=self.importer).pack(side="left", padx=3)
             tk.Button(admin, text="Exporter en JSON…", width=16, command=self.exporter).pack(side="left", padx=3)
             tk.Button(admin, text="Supprimer", width=12, command=self.supprimer).pack(side="left", padx=3)
+            if client_ia.ia_disponible():  # US19 : bouton absent sans clé
+                tk.Button(self, text="🤖 Générer un quizz avec l'IA…",
+                          command=lambda: FenetreGenerationIA(self)).pack(pady=(6, 0))
         self.message.pack(pady=6)
         self.rafraichir()
 
@@ -177,10 +181,13 @@ class EcranListe(Ecran):
         self.liste.delete(0, "end")
         for q in self.quizz:
             minuterie = f"   ⏱ {q.duree_limite} s" if q.duree_limite else ""
+            minuterie += "   🤖" if q.source == "ia" else ""
             description = f" — {q.description}" if q.description else ""
             self.liste.insert("end", f"{q.titre}{minuterie}{description}")
         if not self.quizz:
             self.info("Aucun quizz pour l'instant." + (" Importez-en un !" if self.app.user.est_admin else ""))
+        r = recommandation.recommander(self.con, self.app.user.id_utilisateur)
+        self.recommandation.config(text=f"💡 Recommandé : « {r.quizz.titre} » ({r.raison})" if r else "")
 
     def selection(self) -> Quizz | None:
         choix = self.liste.curselection()
@@ -377,8 +384,22 @@ class EcranResultat(Ecran):
                  font=POLICE_TITRE, width=2).pack(side="left", anchor="n")
         bonnes = ", ".join(c.texte for c in q.bonnes_reponses())
         texte = f"Q{num}. {q.enonce}\n→ {bonnes}"
-        tk.Label(ligne, text=texte, justify="left", anchor="w", wraplength=520).pack(side="left", fill="x")
+        tk.Label(ligne, text=texte, justify="left", anchor="w", wraplength=440).pack(side="left", fill="x")
+        if not ok and client_ia.ia_disponible():
+            tk.Button(ligne, text="Pourquoi ?", command=lambda: self.expliquer(q)).pack(side="right", anchor="n")
         return ligne, ok
+
+    def expliquer(self, q):
+        """US17 : explication de l'IA dans une boîte de dialogue."""
+        self.info("⏳ L'IA prépare l'explication…")
+        self.update_idletasks()
+        try:
+            texte = explications.expliquer(q, self.reponses.get(q.id_question, set()))
+        except client_ia.ErreurIA as e:
+            self.erreur(str(e))
+            return
+        self.message.config(text="")
+        messagebox.showinfo("Pourquoi ?", f"{q.enonce}\n\n{texte}", parent=self)
 
 
 # ---------------------------------------------------------------- historique (US07) et classement (US12)
@@ -414,6 +435,84 @@ class EcranClassement(EcranTableau):
                   for rang, (login, score) in enumerate(qs.classement(app.con, quizz.id_quizz), 1)]
         super().__init__(app, f"🏆 Classement — {quizz.titre}", [("Rang", 70), ("Joueur", 300), ("Meilleur score", 140)],
                          lignes, "Personne n'a encore joué à ce quizz.")
+
+
+# ---------------------------------------------------------------- génération IA (US16)
+class FenetreGenerationIA(tk.Toplevel):
+    """Fenêtre de génération : thème ou texte → aperçu → l'admin enregistre ou abandonne."""
+
+    def __init__(self, liste: EcranListe):
+        super().__init__(liste)
+        self.liste, self.con, self.quizz = liste, liste.con, None
+        self.title("Générer un quizz avec l'IA")
+        self.geometry("620x560")
+        self.transient(liste.app)
+
+        self.depuis_texte = tk.BooleanVar(value=False)
+        haut = tk.Frame(self)
+        haut.pack(fill="x", padx=14, pady=(12, 4))
+        tk.Radiobutton(haut, text="Thème", variable=self.depuis_texte, value=False).pack(side="left")
+        tk.Radiobutton(haut, text="Texte collé", variable=self.depuis_texte, value=True).pack(side="left")
+        tk.Label(haut, text="Questions :").pack(side="left", padx=(20, 4))
+        self.nb = tk.Spinbox(haut, from_=1, to=generateur.NB_QUESTIONS_MAX, width=4)
+        self.nb.delete(0, "end")
+        self.nb.insert(0, "5")
+        self.nb.pack(side="left")
+
+        tk.Label(self, text="Thème (ex. « les volcans ») ou texte à transformer en quizz :", anchor="w").pack(
+            fill="x", padx=14)
+        self.sujet = tk.Text(self, height=5, wrap="word")
+        self.sujet.pack(fill="x", padx=14)
+        self.bouton_generer = tk.Button(self, text="Générer", width=14, command=self.generer)
+        self.bouton_generer.pack(pady=8)
+
+        tk.Label(self, text="Aperçu (à vérifier : une IA peut se tromper)", anchor="w").pack(fill="x", padx=14)
+        self.apercu = tk.Text(self, height=12, wrap="word", state="disabled", bg="#fafafa")
+        self.apercu.pack(fill="both", expand=True, padx=14)
+        self.message = tk.Label(self, text="", fg=ROUGE, wraplength=580)
+        self.message.pack(pady=4)
+        bas = tk.Frame(self)
+        bas.pack(pady=(0, 10))
+        self.bouton_enregistrer = tk.Button(bas, text="Enregistrer", width=14, state="disabled",
+                                            command=self.enregistrer)
+        self.bouton_enregistrer.pack(side="left", padx=4)
+        tk.Button(bas, text="Fermer", width=14, command=self.destroy).pack(side="left", padx=4)
+
+    def generer(self):
+        self.message.config(text="⏳ L'IA prépare le quizz…", fg=GRIS)
+        self.bouton_generer.config(state="disabled")
+        self.update_idletasks()
+        try:
+            self.quizz = generateur.generer_quizz(self.sujet.get("1.0", "end"), int(self.nb.get()),
+                                                  self.depuis_texte.get())
+        except (client_ia.ErreurIA, ValueError) as e:
+            self.quizz = None
+            self.message.config(text=str(e) if isinstance(e, client_ia.ErreurIA) else "Nombre de questions invalide.",
+                                fg=ROUGE)
+        else:
+            self.message.config(text="Relisez l'aperçu, puis enregistrez ou relancez une génération.", fg=VERT)
+        finally:
+            self.bouton_generer.config(state="normal")
+        self.afficher_apercu()
+
+    def afficher_apercu(self):
+        self.apercu.config(state="normal")
+        self.apercu.delete("1.0", "end")
+        if self.quizz:
+            lignes = [self.quizz.titre, self.quizz.description, ""]
+            for num, q in enumerate(self.quizz.questions, 1):
+                lignes.append(f"Q{num}. {q.enonce}")
+                lignes += [f"   {'✔' if c.est_correct else '·'} {c.texte}" for c in q.choix]
+            self.apercu.insert("1.0", "\n".join(lignes))
+        self.apercu.config(state="disabled")
+        self.bouton_enregistrer.config(state="normal" if self.quizz else "disabled")
+
+    def enregistrer(self):
+        self.quizz.id_createur = self.liste.app.user.id_utilisateur
+        qs.enregistrer_quizz(self.con, self.quizz)
+        self.liste.rafraichir()
+        self.liste.info(f"Quizz « {self.quizz.titre} » généré par l'IA et enregistré.")
+        self.destroy()
 
 
 def lancer(con):
