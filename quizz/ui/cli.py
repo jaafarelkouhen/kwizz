@@ -3,6 +3,7 @@ import getpass
 import time
 
 from .. import auth, importer, quiz_service as qs
+from ..ia import client as client_ia, explications, generateur, recommandation
 from ..models import Choix, Question, Quizz, Utilisateur
 
 
@@ -161,7 +162,23 @@ def ecran_jouer(con, user: Utilisateur):
     t = qs.enregistrer_tentative(con, user.id_utilisateur, quizz, reponses, duree)
     afficher_correction(quizz, reponses)
     print(f"\n>>> Score : {t.score}/{t.nb_questions} en {duree}s <<<")
+    erreurs = [q for q in quizz.questions if not qs.est_juste(q, reponses.get(q.id_question, set()))]
+    if erreurs and client_ia.ia_disponible() and \
+            demander("\nExpliquer mes erreurs avec l'IA ? (o/n) ").lower() == "o":
+        expliquer_erreurs(quizz, erreurs, reponses)
     pause()
+
+
+def expliquer_erreurs(quizz: Quizz, erreurs: list[Question], reponses: dict[int, set[int]]):
+    """US17 : une explication par question ratée ; on s'arrête à la première panne de l'IA."""
+    for q in erreurs:
+        num = quizz.questions.index(q) + 1
+        print(f"\n💬 Q{num}. {q.enonce}")
+        try:
+            print(f"   {explications.expliquer(q, reponses.get(q.id_question, set()))}")
+        except client_ia.ErreurIA as e:
+            print(f"   Explication indisponible : {e}")
+            return
 
 
 def afficher_correction(quizz: Quizz, reponses: dict[int, set[int]]):
@@ -301,6 +318,44 @@ def ecran_supprimer(con, user: Utilisateur):
         print("Quizz supprimé.")
 
 
+def lire_texte_multiligne() -> str:
+    print("Collez le texte, puis tapez FIN seul sur une ligne :")
+    lignes = []
+    while (ligne := input()).strip() != "FIN":
+        lignes.append(ligne)
+    return "\n".join(lignes)
+
+
+def ecran_generer_ia(con, user: Utilisateur):
+    """US16 : l'admin relit TOUJOURS le quizz proposé par l'IA avant de l'enregistrer."""
+    print("\n--- Générer un quizz avec l'IA ---")
+    depuis_texte = menu("Source", ["Un thème (ex. « les volcans »)", "Un texte que je colle"]) == 2
+    sujet = lire_texte_multiligne() if depuis_texte else demander_non_vide("Thème : ")
+    nb = demander_entier(f"Nombre de questions (1 à {generateur.NB_QUESTIONS_MAX}) : ",
+                         1, generateur.NB_QUESTIONS_MAX)
+    print("⏳ L'IA prépare le quizz…")
+    try:
+        quizz = generateur.generer_quizz(sujet, nb, depuis_texte)
+    except client_ia.ErreurIA as e:
+        print(f"Erreur : {e}")
+        return
+    quizz.id_createur = user.id_utilisateur
+    afficher_recapitulatif(quizz)
+    print("\n⚠ Vérifiez les questions : une IA peut se tromper.")
+    quizz.duree_limite = demander_duree("Durée limite en secondes (Entrée = pas de minuterie) : ")
+    if demander("Enregistrer ce quizz ? (o/n) ").lower() != "o":
+        print("Quizz non enregistré. Vous pouvez relancer une génération.")
+        return
+    qs.enregistrer_quizz(con, quizz)
+    print(f"Quizz « {quizz.titre} » enregistré (🤖 généré par l'IA, modifiable dans « Modifier un quizz »).")
+
+
+def afficher_recommandation(con, user: Utilisateur):
+    r = recommandation.recommander(con, user.id_utilisateur)
+    if r:
+        print(f"💡 Recommandé : « {r.quizz.titre} » ({r.raison})")
+
+
 # ---------------------------------------------------------------- boucles principales
 def session(con, user: Utilisateur):
     actions = [("Passer un quizz", ecran_jouer), ("Mon historique", ecran_historique),
@@ -311,8 +366,12 @@ def session(con, user: Utilisateur):
                     ("Exporter un quizz en JSON", ecran_exporter),
                     ("Modifier un quizz", ecran_modifier),
                     ("Supprimer un quizz", ecran_supprimer)]
+        if client_ia.ia_disponible():  # US19 : sans clé, l'entrée n'apparaît même pas
+            actions.append(("Générer un quizz avec l'IA 🤖", ecran_generer_ia))
     while True:
         role = "admin" if user.est_admin else "joueur"
+        print()
+        afficher_recommandation(con, user)
         n = menu(f"Connecté : {user.login} ({role})", [a[0] for a in actions] + ["Se déconnecter"])
         if n == len(actions) + 1:
             return
