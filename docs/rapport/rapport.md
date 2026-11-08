@@ -135,7 +135,27 @@ décision : commit à chaque étape → S5 : 3× plus de commits, plus aucun con
 (assistant IA, interface graphique), cohésion, difficultés relationnelles et leur résolution.]*
 
 ## D. Réalisation technique
-*[D.1 Architecture et D.4 Moteur : Sami · D.5 Interfaces et D.6 Validation : Nour]*
+
+### D.1 Architecture logicielle *(Sami)*
+Kwizz suit une **architecture en couches** ([architecture.md](../conception/architecture.md)) :
+- la **présentation** (`ui/cli.py`, `ui/gui.py`) ;
+- les **services métier** (`auth`, `quiz_service`, `importer`, `ia/`) ;
+- les **données** (`models`, `database`).
+
+Chaque couche n'appelle que celle du dessous, selon trois règles :
+1. l'interface n'écrit **jamais de SQL** ;
+2. les services ne font **jamais de `print()` ni d'`input()`** : ils renvoient des valeurs ou lèvent une
+   exception métier (`ErreurAuth`, `ErreurQuizz`, `ErreurFormat`, `ErreurIA`) ;
+3. l'IA est un module **optionnel**, isolé derrière un client unique.
+
+**Bénéfices constatés.** La console et l'interface graphique partagent 100 % de la logique : la GUI a
+été ajoutée au sprint S5 sans toucher aux services. Les services se testent sans interface. Et le
+travail se répartit naturellement entre les membres (une couche chacun), ce qui limite les conflits
+Git.
+
+**Modularité et paramétrage.** Le chemin de la base, le modèle d'IA et l'activation de l'IA se règlent
+sans toucher au code (`.env`). Les quizz entrent et sortent par des **formats documentés**
+([formats.md](../conception/formats.md)).
 
 ### D.2 Données : du MCD à SQLite *(Akram)*
 Le **MCD** ([MCD.md](../conception/MCD.md), [schéma draw.io](../conception/MCD-Kwizz.drawio)) compte
@@ -177,7 +197,60 @@ données. 6 tests vérifient que les cardinalités du MCD sont bien respectées 
 - La clé API de l'IA reste dans `.env`, exclu de Git. Un test vérifie que `.env.example` ne contient
   pas de vraie clé.
 
-### D.x L'assistant IA : choix, éthique et limites
+### D.4 Moteur de quizz et import/export *(Sami)*
+- **Création et modification** dans une **transaction** (`with con:`) : un quizz est enregistré en
+  entier ou pas du tout. Les mêmes règles de validation (`valider`) s'appliquent partout : saisie,
+  import, modification, IA.
+- **Correction** : une question est juste si l'ensemble des choix cochés est **exactement** l'ensemble
+  des bonnes réponses. La comparaison se fait par **identifiants**, si bien que le mélange des
+  questions (US13) ne change pas le score.
+- **Minuterie** (US09) : la logique du temps (`temps_restant`, `temps_ecoule`) est dans le service, ce
+  qui la rend testable en simulant l'horloge. La console vérifie le temps après chaque réponse
+  (`input()` ne peut pas être interrompu) ; l'interface graphique, elle, coupe en direct.
+- **Import texte** (US06) : lecture ligne par ligne, avec une erreur qui donne le **numéro de ligne**.
+  Les fichiers « UTF-8 avec BOM » du Bloc-notes Windows sont acceptés : ce bug a été trouvé et corrigé
+  au sprint S7.
+- **JSON** (US10) : un format versionné (`format`, `version`), sans les identifiants de la base, donc
+  importable partout. **Ce même format est imposé à l'IA** : un quizz généré passe par le même code de
+  lecture et de validation qu'un fichier.
+- **Solutions écartées** :
+  - modifier les questions une par une → rejetée, au profit du remplacement complet dans une
+    transaction (plus simple et plus sûr ; conséquence documentée : le détail des anciennes réponses
+    est perdu, mais les scores restent) ;
+  - YAML comme format d'échange → rejeté (bibliothèque externe, pas de gain pour nos besoins).
+
+### D.5 Interfaces *(Nour)*
+- **Console** (`cli.py`) : menus numérotés et saisies **robustes** (un nombre hors limites ou un champ
+  vide est redemandé, sans plantage) ; récapitulatif avant chaque enregistrement ; `Ctrl+C` quitte
+  proprement.
+- **Interface graphique** (`gui.py`, Tkinter) : un écran par classe (connexion, liste, jeu, résultat,
+  historique, classement), minuterie en direct, corrigé défilant, logo. Elle a été construite d'après
+  les [maquettes](../conception/maquettes.md) du sprint S2.
+- **Accessibilité de l'IA** : les fonctions IA n'apparaissent que si l'IA est disponible. Les appels
+  tournent **en arrière-plan** : la fenêtre ne se fige plus pendant que l'IA répond (bug corrigé au
+  sprint S7).
+- **Tkinter plutôt que PyQt ou une page web** : inclus dans Python, rien à installer, suffisant pour des
+  formulaires.
+
+### D.6 Validation : les tests *(Nour)*
+La qualité est vérifiée par **121 tests automatiques** (pytest), lancés avant chaque Pull Request :
+
+| Domaine | Tests | Exemples de ce qui est vérifié |
+|---------|-------|--------------------------------|
+| Comptes et sécurité | 8 | hachage, login unique, 3 essais, mot de passe admin obligatoire |
+| Base de données | 11 | tables du MLD, cascades, `SET NULL`, migration d'une ancienne base |
+| Moteur de quizz | 17 | création, modification transactionnelle, correction, minuterie, mélange, classement |
+| Import / export | 14 | format texte, JSON aller-retour, fichiers invalides, BOM Windows |
+| Interfaces | 19 | console (saisies simulées) et graphique (fenêtre cachée) |
+| Assistant IA | 50 | client, générateur, explications, recommandation, écrans, configuration — avec une **fausse IA** |
+| Démo de bout en bout | 1 | tout le scénario de démo rejoué dans la console |
+| Lancement | 1 | démarrage sans console (pythonw) |
+
+Les tests utilisent une **base en mémoire neuve** pour chaque test et **n'appellent jamais la vraie
+IA** : ils sont rapides, reproductibles et gratuits. En complément, le PO fait une **recette manuelle**
+sur un clone propre avant chaque jalon ([fiche de recette](../gestion/recette-v1.md)).
+
+### D.7 L'assistant IA : choix, éthique et limites
 **Choix.** Nous avons comparé l'API Claude, un modèle local (Ollama) et l'absence d'IA
 ([étude](../conception/choix-ia.md)). Nous avons retenu l'**API Claude, en option**. C'est la seule
 solution qui garantit une réponse au format JSON de Kwizz, sans installation lourde sur les 4 PC.
