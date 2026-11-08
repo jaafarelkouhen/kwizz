@@ -3,6 +3,8 @@
 On remplace client.demander_json / demander_texte : le vrai générateur et les vrais écrans
 tournent, mais aucune requête ne part sur le réseau.
 """
+import threading
+import time
 import tkinter as tk
 
 import pytest
@@ -28,6 +30,15 @@ def ia(monkeypatch):
 def clavier(monkeypatch, *saisies):
     suite = iter(saisies)
     monkeypatch.setattr("builtins.input", lambda _m="": next(suite))
+
+
+def attendre_fin(app, objet, delai=5.0):
+    """Les appels IA de l'interface tournent en arrière-plan : on fait tourner Tk jusqu'à la fin."""
+    fin = time.monotonic() + delai
+    while getattr(objet, "en_cours", False):
+        assert time.monotonic() < fin, "l'appel IA n'a pas fini à temps"
+        app.update()
+        time.sleep(0.01)
 
 
 def un_quizz(con):
@@ -111,6 +122,7 @@ def test_gui_generation_puis_enregistrement(app, ia):
     fenetre_ia.sujet.insert("1.0", "les volcans")
 
     fenetre_ia.generer()
+    attendre_fin(app, fenetre_ia)
     assert "Plus haut volcan" in fenetre_ia.apercu.get("1.0", "end")
     fenetre_ia.enregistrer()
 
@@ -129,4 +141,38 @@ def test_gui_recommandation_et_pourquoi(app, ia, monkeypatch):
     t = qs.enregistrer_tentative(app.con, app.user.id_utilisateur, q, {})
     resultat = app.afficher(gui.EcranResultat, q, {}, t)
     resultat.expliquer(q.questions[0])
+    attendre_fin(app, resultat)
     assert "Parce que l'Etna" in affiches[0]
+
+
+def test_gui_ne_se_fige_pas_pendant_l_appel_ia(app, ia, monkeypatch):
+    """Pendant que l'IA « réfléchit », la fenêtre continue de répondre."""
+    feu_vert = threading.Event()
+    monkeypatch.setattr(client, "demander_json", lambda *a, **k: (feu_vert.wait(5), QUIZZ_IA)[1])
+    app.user = auth.inscrire(app.con, "prof", "1234", est_admin=True)
+    fenetre_ia = gui.FenetreGenerationIA(app.afficher(gui.EcranListe))
+    fenetre_ia.sujet.insert("1.0", "les volcans")
+
+    fenetre_ia.generer()                      # rend la main tout de suite
+    app.update()
+    assert fenetre_ia.en_cours and fenetre_ia.bouton_generer.cget("state") == "disabled"
+
+    feu_vert.set()
+    attendre_fin(app, fenetre_ia)
+    assert fenetre_ia.quizz.titre == "Volcans"
+    assert fenetre_ia.bouton_generer.cget("state") == "normal"
+    fenetre_ia.destroy()
+
+
+def test_gui_erreur_ia_affichee(app, ia, monkeypatch):
+    def panne(*a, **k):
+        raise client.ErreurIA("Impossible de joindre l'IA")
+    monkeypatch.setattr(client, "demander_json", panne)
+    app.user = auth.inscrire(app.con, "prof", "1234", est_admin=True)
+    fenetre_ia = gui.FenetreGenerationIA(app.afficher(gui.EcranListe))
+    fenetre_ia.sujet.insert("1.0", "les volcans")
+    fenetre_ia.generer()
+    attendre_fin(app, fenetre_ia)
+    assert "Impossible de joindre" in fenetre_ia.message.cget("text")
+    assert fenetre_ia.bouton_enregistrer.cget("state") == "disabled"
+    fenetre_ia.destroy()
