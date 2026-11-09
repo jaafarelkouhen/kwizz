@@ -135,8 +135,47 @@ décision : commit à chaque étape → S5 : 3× plus de commits, plus aucun con
 (assistant IA, interface graphique), cohésion, difficultés relationnelles et leur résolution.]*
 
 ## D. Réalisation technique
-*[Sprint S7 — Akram et Sami. Architecture en couches, MCD/MLD, sécurité, choix techniques et
-solutions écartées, validation par les tests. Base : `docs/conception/`.]*
+*[D.1 Architecture et D.4 Moteur : Sami · D.5 Interfaces et D.6 Validation : Nour]*
+
+### D.2 Données : du MCD à SQLite *(Akram)*
+Le **MCD** ([MCD.md](../conception/MCD.md), [schéma draw.io](../conception/MCD-Kwizz.drawio)) compte
+5 entités : UTILISATEUR, QUIZZ, QUESTION, CHOIX et TENTATIVE. Elles sont reliées par 6 associations.
+Deux choix de modélisation sont à justifier :
+- **un seul type d'utilisateur**, avec un attribut `est_admin`, plutôt que deux entités. Un
+  administrateur peut ainsi aussi jouer, et l'authentification reste unique ;
+- **RÉPONDRE (TENTATIVE n,n CHOIX)** conserve le détail des réponses cochées, pas seulement le score.
+  Les questions à plusieurs bonnes réponses restent donc possibles.
+
+Le passage au **MLD** applique les règles classiques :
+- une association 1,1 donne une clé étrangère ;
+- une association 0,1 donne une clé étrangère facultative ;
+- une association n,n donne une table `reponse` dont la clé primaire est composée des deux clés.
+
+Le schéma SQL ([schema.sql](../conception/schema.sql)) traduit les **cardinalités en contraintes** :
+| Règle du MCD | Contrainte SQL |
+|--------------|----------------|
+| un login identifie un utilisateur | `UNIQUE` |
+| une question appartient à un quizz (1,1) | clé étrangère `NOT NULL` + `ON DELETE CASCADE` |
+| un quizz survit à la suppression de son créateur (0,1) | `ON DELETE SET NULL` |
+| l'origine d'un quizz est manuel, fichier ou ia | `CHECK (source IN …)` |
+
+**Choix de SQLite** : inclus dans Python, sans serveur à installer, et avec de vraies contraintes
+d'intégrité (contrairement à un fichier JSON). Une base qui date d'une version précédente est
+**migrée automatiquement** au lancement (`database.migrer`, ajout de la colonne `source`), sans perte de
+données. 6 tests vérifient que les cardinalités du MCD sont bien respectées par la base.
+
+### D.3 Sécurité des comptes *(Akram)*
+- Les mots de passe ne sont **jamais stockés en clair**. On stocke `sel$hash` : un **sel** aléatoire de
+  16 octets propre à chaque compte, et un hash **PBKDF2-SHA256 à 100 000 itérations**, volontairement
+  lent. MD5 et SHA-1 seuls ont été écartés : ils sont trop rapides à attaquer par force brute.
+- La vérification se fait en **temps constant** (`hmac.compare_digest`).
+- Le message « login ou mot de passe incorrect » est **identique** dans les deux cas : on ne révèle pas
+  quels logins existent. La connexion permet 3 essais.
+- La saisie est **masquée** (`getpass`, US14).
+- Le compte `admin/admin` créé au premier lancement doit **obligatoirement changer de mot de passe** à
+  la première connexion (US15).
+- La clé API de l'IA reste dans `.env`, exclu de Git. Un test vérifie que `.env.example` ne contient
+  pas de vraie clé.
 
 ### D.x L'assistant IA : choix, éthique et limites
 **Choix.** Nous avons comparé l'API Claude, un modèle local (Ollama) et l'absence d'IA
