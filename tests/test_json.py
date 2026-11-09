@@ -62,3 +62,10 @@ def test_tous_les_exemples_s_importent():
     assert fichiers
     for f in fichiers:
         qs.valider(lire_quizz(f))
+
+
+def test_fichier_json_avec_bom(tmp_path):
+    f = tmp_path / "bom.json"
+    f.write_bytes(("\ufeff" + json.dumps({"format": "kwizz-quizz", "version": 1, "titre": "BOM", "questions": []}))
+                  .encode("utf-8"))
+    assert lire_quizz_json(f).titre == "BOM"
