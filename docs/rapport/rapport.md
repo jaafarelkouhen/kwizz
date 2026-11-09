@@ -4,16 +4,15 @@
 **Équipe Kwizz & Co :** Jaafar EL KOUHEN (Product Owner), Akram AISSA, Sami LAARFI, Nour El Oula HARRAG
 **Dépôt :** https://github.com/jaafarelkouhen/kwizz · **Trello :** https://trello.com/b/uNtICE5l/kwizz-co-kwizz-app
 
-> Brouillon v1 (sprint S5). Les passages entre crochets `[…]` sont à compléter avec les **données
-> réelles** du projet : temps réels, dates, difficultés vécues. Ne rien inventer : le prof compare avec
-> Trello et GitHub.
+> Version v2 du 09/11/2026 (parties A à E). Les chiffres et les dates viennent de GitHub, de Trello et
+> des comptes-rendus.
 
 ## Sommaire
 - A. Objectifs du projet
 - B. Gestion du projet
-- C. Autonomie de l'équipe et gestion des difficultés *(sprint S7)*
-- D. Réalisation technique *(Akram et Sami, sprint S7)*
-- E. Bilan et perspectives *(sprint S7)*
+- C. Autonomie de l'équipe et gestion des difficultés
+- D. Réalisation technique
+- E. Bilan et perspectives
 - Annexes
 
 ---
@@ -104,17 +103,18 @@ Elles ont donc été **poussées et fusionnées en premier**. À l'inverse, l'in
 - **Git** : une branche et une Pull Request relue par tâche, `main` protégée, tags de version.
   L'historique des commits montre qui a fait quoi.
 - **Recette** du PO sur un clone propre avant chaque jalon ([fiche de recette](../gestion/recette-v1.md)).
-- **Tests automatisés** : [nombre] tests pytest, dont un scénario complet de démo.
+- **Tests automatisés** : 123 tests pytest, dont un scénario complet de démo.
 
-**Estimé vs réel** *(à compléter depuis les comptes-rendus)* :
+**Prévu vs réel.** Les cartes Trello portent une estimation en heures, mais le temps réel n'a pas été
+noté : la comparaison se fait donc sur les **dates**, dans le
+[Gantt prévu vs réel](../gestion/gantt.md#suivi-prévu-vs-réel). En résumé :
 
-| Sprint | Charge estimée | Charge réelle | Écart | Explication |
-|--------|----------------|---------------|-------|-------------|
-| S2 | [ ] h | [ ] h | [ ] | [ ] |
-| S3 | [ ] h | [ ] h | [ ] | [ ] |
-| S4 | [ ] h | [ ] h | [ ] | [ ] |
-| S5 | [ ] h | [ ] h | [ ] | [ ] |
-| S6 | [ ] h | [ ] h | [ ] | [ ] |
+| Sprint | Prévu | Réel | Écart |
+|--------|-------|------|-------|
+| S2 | conception validée (19/10) | MCD le 19/10, le reste le 20/10, architecture le 02/11 | +1 jour ; architecture en retard |
+| S3 | comptes + création | tout le socle fusionné les 19-20/10 | ≈ 1 semaine d'avance |
+| S4 | MVP (02/11) | US08 et MVP fusionnés le 02/11 ; recette et tag le 09/11 | MVP à l'heure, recette +1 semaine |
+| S5 | bonus | bonus déjà livrés le 02/11 ; écrans IA, bugs et rapport le 09/11 | ≈ 1 semaine d'avance |
 
 ### B.6 Communication
 - **Interne** : canal d'équipe avec un fil par module, une réponse sous 24 h, et les blocages signalés
@@ -125,14 +125,67 @@ Elles ont donc été **poussées et fusionnées en premier**. À l'inverse, l'in
 ### B.7 Amélioration continue
 À chaque fin de sprint, une **rétrospective** « Garder / Arrêter / Essayer » fixe **une** action pour le
 sprint suivant, vérifiée à la rétrospective d'après ([rétrospectives](../gestion/retrospectives.md)).
-*[Citer ici 2 actions réelles et leur effet, ex. : « S4 : on attendait la fin de séance pour commiter →
-décision : commit à chaque étape → S5 : 3× plus de commits, plus aucun conflit »]*
+Deux actions décidées en cours de projet et leur effet :
+- **après le 02/11 : fusionner les PR le jour même**, dans l'ordre fixé par le PO. Effet : le 09/11,
+  les 11 PR de la séance ont été fusionnées dans l'ordre, sans aucun conflit (PR #42 à #52) ;
+- **le 09/11 : tenir Trello à jour à chaque fusion**, après avoir constaté que 22 cartes livrées
+  n'étaient pas cochées. Effet : les cartes suivantes ont été cochées avec le lien de leur PR.
 
 ---
 
 ## C. Autonomie de l'équipe et gestion des difficultés
-*[Sprint S7 — Jaafar. Auto-formation (Tkinter, SQLite, Git, API IA), appels aux enseignants, initiatives
-(assistant IA, interface graphique), cohésion, difficultés relationnelles et leur résolution.]*
+
+### C.1 Auto-formation
+Plusieurs technologies n'avaient pas été vues en cours. Chaque membre s'est formé sur celles de son
+module ; le résultat est visible dans le dépôt :
+| Sujet | Qui | Où on le voit dans le projet |
+|-------|-----|------------------------------|
+| Git en équipe (branches, Pull Requests) | tous | 55 PR fusionnées, [workflow Git](../gestion/workflow-git.md) |
+| SQLite, contraintes et migrations | Akram | `quizz/database.py`, [schéma SQL](../conception/schema.sql) |
+| Hachage des mots de passe (PBKDF2, sel) | Akram | `quizz/auth.py` |
+| Tkinter (interface graphique) | Nour | `quizz/ui/gui.py` |
+| pytest, simulation des saisies (`monkeypatch`) | Nour | `tests/`, test de bout en bout |
+| API Claude (SDK `anthropic`, sortie JSON imposée) | Sami | `quizz/ia/` |
+| Gantt, PERT, Mermaid | Jaafar | [Gantt](../gestion/gantt.md), [PERT](../gestion/PERT.md) |
+
+### C.2 Initiatives de l'équipe
+- **Assistant IA** (US16–US19) : au-delà des suggestions du sujet, avec une contrainte que nous nous
+  sommes imposée : l'application doit marcher **sans** IA.
+- **Tests automatiques** systématiques (123 tests) et un **test de bout en bout** qui rejoue la démo.
+- **Script de préparation de la démo** et **recette** du PO sur un clone propre avant chaque jalon.
+
+### C.3 Appels aux enseignants
+Le premier contact a été le **mail d'ouverture** envoyé aux enseignants en début de projet, avec les liens du
+dépôt et du Trello. Les autres échanges ont eu lieu à l'oral pendant les séances ; ils n'ont pas été
+consignés dans les comptes-rendus, ce que nous ferions autrement sur un prochain projet.
+
+### C.4 Difficultés rencontrées et stratégie
+**Techniques (constatées dans le code et corrigées) :**
+| Difficulté | Comment nous l'avons détectée | Solution |
+|------------|-------------------------------|----------|
+| Les fichiers enregistrés par le Bloc-notes Windows (« UTF-8 avec BOM ») étaient refusés à l'import | relecture et essais sur un autre PC (sprint S5, 09/11) | lecture en `utf-8-sig` + 2 tests |
+| L'application plantait lancée sans console (`pythonw`, double-clic) | idem | garde sur `sys.stdout` + test |
+| La fenêtre se figeait (« Ne répond pas ») pendant un appel à l'IA | essai de l'interface graphique | appel en arrière-plan (thread) + test qui le prouve |
+| Les tests de l'interface graphique échouaient au hasard sous Windows | tests lancés en boucle | une seule fenêtre Tk partagée par tous les tests |
+| Plusieurs membres modifiaient le même fichier (`cli.py`) | conflits Git | ordre de fusion des PR fixé par le PO, prévenir avant de toucher le fichier d'un autre |
+
+**Organisationnelles :**
+- **une tâche critique en retard** : « modifier un quizz » (US08), avec l'architecture et les formats
+  d'import, n'était pas prête en S3, ce qui bloquait l'écran de modification de Nour (compte-rendu
+  CR-03). Le PO a aidé à pousser ces travaux le 02/11 (PR #22 à #24), ce qui a débloqué l'écran le
+  jour même (PR #30) ;
+- **du code prêt mais fusionné tard** : les travaux d'Akram du 22/10 n'ont été fusionnés que le 02/11.
+  D'où la règle « fusionner le jour même » (voir B.7) ;
+- **aucune absence** n'a été relevée aux séances 2 à 4 (comptes-rendus CR-02 à CR-04).
+
+### C.5 Cohésion
+Les faits visibles sur GitHub au 09/11 : **55 Pull Requests fusionnées** (Jaafar 24, Nour 14, Sami 9,
+Akram 8) et des commits de chaque membre sur `main`. Chacun a livré sa partie du code **et** sa partie
+du rapport. En revanche, peu de revues formelles ont été laissées sur GitHub (10 en tout) : la
+relecture s'est surtout faite de vive voix pendant les séances.
+Le canal d'équipe suit les règles de la [charte](../gestion/charte-equipe.md) : réponse sous 24 h,
+blocage signalé tout de suite, prévenir avant de toucher le fichier d'un autre, et un message à chaque
+PR ouverte ([message d'ouverture](../gestion/canal-equipe.md)).
 
 ## D. Réalisation technique
 
@@ -233,7 +286,7 @@ données. 6 tests vérifient que les cardinalités du MCD sont bien respectées 
   formulaires.
 
 ### D.6 Validation : les tests *(Nour)*
-La qualité est vérifiée par **121 tests automatiques** (pytest), lancés avant chaque Pull Request :
+La qualité est vérifiée par **123 tests automatiques** (pytest), lancés avant chaque Pull Request :
 
 | Domaine | Tests | Exemples de ce qui est vérifié |
 |---------|-------|--------------------------------|
@@ -273,12 +326,64 @@ final reste sous la responsabilité de l'humain qui le valide.
 
 **Validation.** Tout le code IA est testé avec une **fausse IA** : aucun appel réseau pendant les tests.
 Les tests couvrent les pannes (pas de clé, délai dépassé, refus, JSON invalide) et le parcours complet
-dans les écrans. *[Ajouter ici le résultat d'un essai réel avec une clé : qualité des questions sur
-2-3 thèmes, temps de réponse, coût constaté sur la console Anthropic.]*
+dans les écrans. Aucun essai avec une vraie clé n'a été consigné : la démonstration le fera, avec un plan B sans IA.
 
 ## E. Bilan et perspectives
-*[Sprint S7 — Jaafar. Fonctionnalités livrées / non livrées, évaluation critique, difficultés,
-pistes : multijoueur, modèle IA local, export PDF des résultats…]*
+
+### E.1 Résultats obtenus
+- **Cahier des charges minimum rempli** : comptes avec historique des scores, création de quizz par
+  l'administrateur (à la main ou par fichier texte), score et bonnes réponses en fin de quizz.
+- **Toutes les extensions suggérées** : minuterie, export/import JSON, interface graphique.
+- **Au-delà** : modification de quizz, classement, ordre aléatoire, sécurité renforcée (mot de passe
+  masqué, mot de passe admin obligatoire) et **assistant IA optionnel** (génération, explications,
+  recommandation).
+- **19 user stories sur 19 livrées**, **123 tests automatiques**, **2 versions taguées** (`v1.0-mvp`,
+  `v2.0-final`).
+- **Livrables de gestion** : backlog, PBS, WBS, Gantt, PERT, risques, charte, comptes-rendus,
+  rétrospectives, recette.
+
+### E.2 Évaluation critique
+**Ce qui a bien marché :**
+- le **MVP a été livré à la date du jalon** (02/11), et les bonus comme le moteur IA avec 1 à 2 semaines
+  d'avance (voir le Gantt réel) ;
+- le **découpage en couches** a permis à chacun de travailler sur son module en parallèle ;
+- l'**ordre de fusion** fixé par le PO a évité les conflits sur les fichiers partagés ;
+- les **tests automatiques** (123) ont servi de filet à chaque PR, et la recette du 09/11 sur un clone
+  propre a validé le MVP en 18 cas sur 18.
+
+**Ce qui aurait pu être mieux fait :**
+- **les fusions ont été groupées** au lieu d'être faites au fil de l'eau : 22 PR le 02/11, 11 le
+  09/11. Le code d'Akram était prêt le 22/10 mais n'a été fusionné que le 02/11 ;
+- **la recette et le tag `v1.0-mvp`** ont été faits une semaine après le jalon (09/11) ;
+- **le temps réel n'a pas été noté** sur les cartes Trello : nous ne pouvons pas comparer précisément
+  l'estimé et le réel, seulement les dates (Gantt prévu vs réel).
+- Certains bugs (BOM, lancement sans console, fenêtre figée) n'ont été trouvés qu'au sprint S5, après le MVP : une
+  recette sur **plusieurs PC** dès le sprint S4 les aurait trouvés plus tôt.
+- **le tableau Trello a pris du retard sur le code** : le 09/11, 22 cartes déjà livrées n'étaient pas
+  cochées, et les colonnes « En cours » et « En revue » n'ont pas servi ;
+- **la charge visible sur GitHub est inégale** : le PO a fusionné 24 PR, dont 5 qu'il a poussées pour
+  débloquer un coéquipier ; une meilleure répartition dès le départ aurait évité ces reprises.
+
+**Limites connues du produit :**
+- en console, la minuterie est vérifiée **après** chaque réponse (`input()` ne peut pas être
+  interrompu) ; l'interface graphique, elle, coupe en direct ;
+- l'interface ne permet de cocher **qu'une** réponse par question (le moteur, lui, gère plusieurs bonnes
+  réponses) ;
+- la création et la modification « à la main » ne sont disponibles qu'en console ;
+- l'IA demande une clé payante et une connexion Internet.
+
+### E.3 Perspectives
+- **Questions à choix multiples** dans l'interface (le moteur et la base le permettent déjà).
+- Création et modification de quizz **dans l'interface graphique**.
+- **Modèle IA local** (Ollama) : gratuit, hors ligne, sans envoi de données (voir l'étude IA).
+- **Mode multijoueur** en réseau, ou une version web.
+- **Statistiques** par question (taux de réussite) pour aider l'administrateur à améliorer ses quizz.
+- Export des résultats en **PDF ou CSV** pour un enseignant.
+
+### E.4 Documentation produite
+README (installation, utilisation, IA), glossaire, conception (MCD, MLD, architecture, formats, cas
+d'utilisation, maquettes, étude IA), gestion (backlog, PBS, WBS, Gantt, PERT, risques, charte, workflow
+Git, recette, rétrospectives, scénario de démo), comptes-rendus de séance, et ce rapport.
 
 ## Annexes
 - Gantt réel vs prévu (T68)
