@@ -138,6 +138,32 @@ décision : commit à chaque étape → S5 : 3× plus de commits, plus aucun con
 *[Sprint S7 — Akram et Sami. Architecture en couches, MCD/MLD, sécurité, choix techniques et
 solutions écartées, validation par les tests. Base : `docs/conception/`.]*
 
+### D.x L'assistant IA : choix, éthique et limites
+**Choix.** Nous avons comparé l'API Claude, un modèle local (Ollama) et l'absence d'IA
+([étude](../conception/choix-ia.md)). Nous avons retenu l'**API Claude, en option**. C'est la seule
+solution qui garantit une réponse au format JSON de Kwizz, sans installation lourde sur les 4 PC.
+
+**Limites connues et réponses apportées :**
+
+| Limite | Risque | Ce que fait Kwizz |
+|--------|--------|-------------------|
+| **Hallucinations** : une IA peut affirmer une chose fausse avec assurance | une question avec une mauvaise « bonne réponse » | aucun quizz généré n'est enregistré sans **relecture** : récapitulatif, avertissement « une IA peut se tromper », confirmation. Le quizz reste modifiable (US08) et porte la marque 🤖 (`source = ia`) |
+| Réponse au mauvais format | plantage ou quizz incomplet | format **imposé par un schéma JSON**, puis les **mêmes contrôles** qu'un fichier importé : au moins 2 choix, une seule bonne réponse |
+| **Dépendance** à un service externe | démo bloquée sans réseau | **mode hors-ligne** (US19) : sans clé ni réseau, les fonctions IA disparaissent et le reste marche. Testé automatiquement |
+| **Coût** à l'usage | facture | appels seulement sur clic, 20 questions maximum, modèle réglable (`KWIZZ_MODELE`) |
+| **Données envoyées** à un tiers | confidentialité | seuls le thème, le texte collé ou la question ratée sont envoyés : jamais les comptes, mots de passe ou scores. À éviter : coller un texte confidentiel |
+| **Sécurité de la clé** | clé publiée sur GitHub | clé dans `.env` (ignoré par Git), `.env.example` sans vraie clé, test automatique qui le vérifie |
+| Refus du modèle | aucune réponse | option `fallbacks` (repli automatique) et message clair à l'utilisateur |
+
+**Position de l'équipe.** L'IA **assiste** l'administrateur et le joueur, elle ne décide pas. La
+recommandation de quizz fonctionne même **sans IA**, avec des règles simples et explicables. Le contenu
+final reste sous la responsabilité de l'humain qui le valide.
+
+**Validation.** Tout le code IA est testé avec une **fausse IA** : aucun appel réseau pendant les tests.
+Les tests couvrent les pannes (pas de clé, délai dépassé, refus, JSON invalide) et le parcours complet
+dans les écrans. *[Ajouter ici le résultat d'un essai réel avec une clé : qualité des questions sur
+2-3 thèmes, temps de réponse, coût constaté sur la console Anthropic.]*
+
 ## E. Bilan et perspectives
 *[Sprint S7 — Jaafar. Fonctionnalités livrées / non livrées, évaluation critique, difficultés,
 pistes : multijoueur, modèle IA local, export PDF des résultats…]*
