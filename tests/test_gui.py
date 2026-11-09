@@ -12,19 +12,6 @@ from quizz.models import Choix, Question, Quizz
 from quizz.ui import gui
 
 
-@pytest.fixture(scope="module")
-def fenetre():
-    """UNE seule fenêtre Tk pour tout le fichier : sous Windows, recréer Tk() en boucle
-    dans le même processus échoue parfois (« Can't find a usable tk.tcl »)."""
-    try:
-        application = gui.Application(None)
-    except tk.TclError as e:
-        pytest.skip(f"pas d'affichage graphique disponible ({e})")
-    application.withdraw()
-    yield application
-    application.destroy()
-
-
 @pytest.fixture
 def app(fenetre, con):
     """Avant chaque test : base neuve, personne de connecté, retour à l'écran de connexion."""
