@@ -10,22 +10,22 @@
 - **Dép.** : tâche(s) à terminer avant
 - **Fini quand** : critère de fin (Definition of Done)
 
-**Tableau Trello :** https://trello.com/b/uNtICE5l/kwizz-co-kwizz-app — une liste par membre + `En cours` → `En revue` → `Terminé`. Les cartes sont préfixées par la séance (`S2 - T14 …` = séance 2, tâche T14).
-**Étiquettes :** `Gestion` · `Données` · `Moteur` · `Interface` · `Tests` · `IA` · `Doc` · `Bonus`
+**Tableau Trello :** https://trello.com/b/uNtICE5l/kwizz-co-kwizz-app — une liste `User stories (backlog produit)`, une liste par membre, puis `✅ Terminé`. Les cartes sont préfixées par le sprint (`S2 - T14 …` = sprint S2, tâche T14), et une carte terminée porte en commentaire le lien de sa Pull Request.
+**Étiquettes :** violet = backlog v2.1 (bonus). Le domaine se lit déjà dans la liste du membre.
 
 **Definition of Done globale :** code commité sur une branche, revu par 1 autre membre, tests passants,
 `python main.py` ne plante pas, carte Trello déplacée dans *Terminé* avec le temps réel.
 
 ---
 
-## Sprint 0 — Semaine 1 (12/10) · Lancement *(TP1)*
+## Sprint S1 — Semaine 1 (12/10) · Lancement *(TP1)*
 
 Objectif : l'équipe, les outils et le périmètre sont en place.
 
 | ID | Tâche | Resp. | Est. | Dép. | Fini quand |
 |----|-------|-------|------|------|-----------|
 | T01 | Créer le dépôt GitHub `jaafarelkouhen/kwizz` + inviter les 3 membres en écriture | JK | 0,5 h | — | les 3 ont accepté l'invitation ✅ |
-| T02 | Créer le tableau Trello (colonnes + étiquettes ci-dessus), inviter l'équipe | JK | 1 h | — | les 4 membres sur le tableau |
+| T02 | Créer le tableau Trello (listes ci-dessus), inviter l'équipe | JK | 1 h | — | les 4 membres sur le tableau |
 | T03 | Créer le canal d'équipe (Discord/Teams/Slack) + règles de communication | JK | 0,5 h | — | canal actif, 1er message de chacun |
 | T04 | Envoyer le mail au commanditaire avec liens GitHub + Trello | JK | 0,5 h | T01, T02 | mail envoyé (copie dans `docs/gestion/`) |
 | T05 | Rédiger la charte d'équipe (rôles, horaires, règles de commit, branches) | JK | 1 h | — | `docs/gestion/charte-equipe.md` commité |
@@ -35,21 +35,21 @@ Objectif : l'équipe, les outils et le périmètre sont en place.
 
 ---
 
-## Sprint 1 — Semaine 2 (19/10) · Conception
+## Sprint S2 — Semaine 2 (19/10) · Conception
 
 Objectif : architecture et modèle de données validés, livrables de planification faits.
 
 | ID | Tâche | Resp. | Est. | Dép. | Fini quand |
 |----|-------|-------|------|------|-----------|
-| T09 | PBS (arborescence des produits/livrables) | JK | 1,5 h | T07 | `docs/gestion/PBS.png` |
-| T10 | WBS (découpage en lots de travaux, reprend les IDs de ce plan) | JK | 2 h | T09 | `docs/gestion/WBS.png` |
-| T11 | Gantt prévisionnel (GanttProject ou Excel) | JK | 2 h | T10 | `docs/gestion/gantt-previsionnel.png` |
-| T12 | PERT + chemin critique | JK | 1,5 h | T10 | `docs/gestion/PERT.png` + chemin critique noté |
+| T09 | PBS (arborescence des produits/livrables) | JK | 1,5 h | T07 | `docs/gestion/PBS.md` |
+| T10 | WBS (découpage en lots de travaux, reprend les IDs de ce plan) | JK | 2 h | T09 | `docs/gestion/WBS.md` |
+| T11 | Gantt prévisionnel (Mermaid) | JK | 2 h | T10 | `docs/gestion/gantt.md` |
+| T12 | PERT + chemin critique | JK | 1,5 h | T10 | `docs/gestion/PERT.md` + chemin critique noté |
 | T13 | MCD entité-association (Utilisateur, Quizz, Question, Choix, Tentative, Réponse) | AA | 3 h | — | `docs/conception/MCD.png` validé par l'équipe |
 | T14 | MLD / schéma SQL déduit du MCD | AA | 2 h | T13 | `docs/conception/schema.sql` |
-| T15 | Diagramme d'architecture (modules + règle « ui n'écrit pas de SQL ») | SL | 1,5 h | — | `docs/conception/architecture.png` |
-| T16 | Diagramme de cas d'utilisation (admin / joueur / IA) | NH | 1,5 h | T07 | `docs/conception/cas-utilisation.png` |
-| T17 | Maquettes des écrans console + GUI (papier ou Figma) | NH | 2 h | T16 | `docs/conception/maquettes/` |
+| T15 | Diagramme d'architecture (modules + règle « ui n'écrit pas de SQL ») | SL | 1,5 h | — | `docs/conception/architecture.md` |
+| T16 | Diagramme de cas d'utilisation (admin / joueur / IA) | NH | 1,5 h | T07 | `docs/conception/cas-utilisation.md` |
+| T17 | Maquettes des écrans console + GUI (papier ou Figma) | NH | 2 h | T16 | `docs/conception/maquettes.md` |
 | T18 | Spécifier le format du fichier d'import texte + JSON | SL | 1 h | — | section dans README validée |
 | T19 | Matrice des risques (dont risque IA : coût, panne réseau, clé API) | JK | 1 h | — | `docs/gestion/risques.md` |
 | T20 | Glossaire du domaine (quizz, tentative, score, prompt, LLM…) | NH | 1 h | — | `docs/glossaire.md` complété |
@@ -57,7 +57,7 @@ Objectif : architecture et modèle de données validés, livrables de planificat
 
 ---
 
-## Sprint 2 — Semaine 3 (26/10) · Socle (MVP partie 1)
+## Sprint S3 — Semaine 3 (26/10) · Socle (MVP partie 1)
 
 Objectif : on peut créer un compte, se connecter, et la base existe.
 
@@ -75,7 +75,7 @@ Objectif : on peut créer un compte, se connecter, et la base existe.
 
 ---
 
-## Sprint 3 — Semaine 4 (02/11) · MVP complet
+## Sprint S4 — Semaine 4 (02/11) · MVP complet
 
 Objectif : **le cahier des charges minimum est rempli** et démontrable.
 
@@ -94,7 +94,7 @@ Objectif : **le cahier des charges minimum est rempli** et démontrable.
 
 ---
 
-## Sprint 4 — Semaine 5 (09/11) · Fonctionnalités avancées
+## Sprint S5 — Semaine 5 (09/11) · Fonctionnalités avancées
 
 Objectif : enrichir le produit (bonus du sujet).
 
@@ -113,7 +113,7 @@ Objectif : enrichir le produit (bonus du sujet).
 
 ---
 
-## Sprint 5 — Semaine 6 (16/11) · IA interne « Kwizz AI »
+## Sprint S6 — Semaine 6 (16/11) · IA interne « Kwizz AI »
 
 Objectif : ajouter un assistant IA **optionnel** (l'appli marche sans clé ni réseau).
 
@@ -140,7 +140,7 @@ Fonctions IA retenues :
 
 ---
 
-## Sprint 6 — Semaine 7 (23/11) · Stabilisation, rapport, démo *(dernière séance)*
+## Sprint S7 — Semaine 7 (23/11) · Stabilisation, rapport, démo *(dernière séance)*
 
 Objectif : version finale sans bug, rapport rendu, démo de 15 min prête.
 
