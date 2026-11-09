@@ -20,7 +20,7 @@ class ErreurFormat(Exception):
 
 def lire_quizz_texte(chemin: str | Path) -> Quizz:
     quizz = Quizz(titre="")
-    with open(chemin, encoding="utf-8") as f:
+    with open(chemin, encoding="utf-8-sig") as f:  # utf-8-sig : accepte aussi le BOM ajouté par le Bloc-notes Windows
         for num, ligne in enumerate(f, 1):
             ligne = ligne.strip()
             if not ligne:
@@ -97,7 +97,7 @@ def exporter_json(quizz: Quizz, chemin: str | Path) -> None:
 
 def lire_quizz_json(chemin: str | Path) -> Quizz:
     try:
-        with open(chemin, encoding="utf-8") as f:
+        with open(chemin, encoding="utf-8-sig") as f:
             donnees = json.load(f)
     except json.JSONDecodeError as e:
         raise ErreurFormat(f"JSON mal formé (ligne {e.lineno}) : {e.msg}") from e
