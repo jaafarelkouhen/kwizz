@@ -1,0 +1,148 @@
+# Rapport de projet — Kwizz
+
+**PROJ531 — Gestion de projet informatique · Polytech · 2026**
+**Équipe Kwizz & Co :** Jaafar EL KOUHEN (Product Owner), Akram AISSA, Sami LAARFI, Nour El Oula HARRAG
+**Dépôt :** https://github.com/jaafarelkouhen/kwizz · **Trello :** https://trello.com/b/uNtICE5l/kwizz-co-kwizz-app
+
+> Brouillon v1 (sprint S5). Les passages entre crochets `[…]` sont à compléter avec les **données
+> réelles** du projet : temps réels, dates, difficultés vécues. Ne rien inventer : le prof compare avec
+> Trello et GitHub.
+
+## Sommaire
+- A. Objectifs du projet
+- B. Gestion du projet
+- C. Autonomie de l'équipe et gestion des difficultés *(sprint S7)*
+- D. Réalisation technique *(Akram et Sami, sprint S7)*
+- E. Bilan et perspectives *(sprint S7)*
+- Annexes
+
+---
+
+## A. Objectifs du projet
+
+### A.1 Le besoin
+Le commanditaire demande une **application Python de quizz** : un quizz est une série de questions
+posées à des utilisateurs autorisés, et l'application affiche le score final et les bonnes réponses.
+Le cahier des charges impose au minimum :
+- la **création de compte**, pour conserver l'historique des scores de chaque utilisateur ;
+- la **création de quizz par un administrateur**, directement ou à partir d'un fichier texte.
+
+Il suggère des extensions : minuterie, export JSON, interface graphique.
+
+### A.2 Notre compréhension et notre périmètre
+Le cahier des charges est volontairement court. Nous l'avons traduit en **19 user stories** priorisées
+avec la méthode MoSCoW ([backlog](../gestion/backlog.md)) :
+- **Must** (US01–US07) : comptes, connexion, création et import de quizz, jeu, correction, historique.
+- **Should** (US08, US14, US15) : modifier/supprimer un quizz, sécurité des mots de passe.
+- **Could** (US09–US13, US16–US18) : minuterie, JSON, interface graphique, classement, ordre
+  aléatoire et un **assistant IA**. L'IA est une initiative de l'équipe, au-delà des suggestions du sujet.
+- **Contrainte forte** (US19) : l'application doit rester **entièrement utilisable sans IA**.
+
+### A.3 Double objectif
+Le projet est évalué à **60 % sur la gestion de projet** et à 40 % sur le développement. Notre objectif
+était donc autant de **livrer un produit qui marche** que de **montrer une démarche de gestion de projet
+traçable** : Trello, comptes-rendus, Git et les livrables de planification.
+
+---
+
+## B. Gestion du projet
+
+### B.1 Organisation de l'équipe
+| Membre | Rôle | Périmètre |
+|--------|------|-----------|
+| Jaafar EL KOUHEN | Product Owner | relation avec le commanditaire, backlog, Trello, plannings, comptes-rendus, intégration, rapport |
+| Akram AISSA | Dev « Données » | MCD/MLD, base SQLite, comptes et sécurité, classement, recommandation |
+| Sami LAARFI | Dev « Moteur Quizz » | logique des quizz, import/export, minuterie, services IA |
+| Nour El Oula HARRAG | Dev « Interface & Qualité » | console, interface graphique, tests, README, logo |
+
+Chaque membre est **propriétaire** de modules précis. Ce découpage par couche (données → moteur →
+interface) suit l'architecture logicielle. Il réduit les conflits Git et rend la contribution de
+chacun visible. Les règles de travail sont fixées dans la [charte d'équipe](../gestion/charte-equipe.md).
+
+### B.2 Ressources
+- **Humaines** : 4 personnes, environ 6 séances encadrées, plus du travail personnel entre les séances.
+- **Matérielles et logicielles** : PC personnels sous Windows, Python 3.12, bibliothèques standard
+  (`sqlite3`, `tkinter`, `hashlib`) ; `pytest` pour les tests ; SDK `anthropic` pour l'IA (optionnelle).
+- **Outils de gestion** : GitHub (code, PR, tags), Trello (tâches), canal d'équipe (communication),
+  draw.io et Mermaid (diagrammes).
+
+### B.3 Modèle de processus : SCRUM adapté
+Nous avons suivi un **SCRUM simplifié** :
+- **sprints d'une semaine**, un par séance, avec chacun un objectif livrable
+  ([planning des sprints](../gestion/gantt.md)) ;
+- un **backlog priorisé** tenu par le PO ;
+- des **tâches de 6 h au maximum**, soit moins de 2 jours comme l'impose le sujet ;
+- des **rituels courts** : *daily* de 5 min en début de séance, réunion de fin de séance avec un
+  compte-rendu, **rétrospective** en fin de sprint ;
+- une **Definition of Done** commune : code relu en PR, tests verts, appli fonctionnelle, carte Trello
+  terminée avec le temps réel noté.
+
+Pourquoi SCRUM plutôt qu'un cycle en V : le cahier des charges est court et volontairement ouvert. Une
+démarche **itérative** nous a permis de livrer un **MVP dès le sprint S4** (tag `v1.0-mvp`), puis
+d'ajouter les bonus sans jamais casser ce qui marchait.
+
+### B.4 Planification
+Les livrables de planification exigés sont dans `docs/gestion/` :
+| Livrable | Contenu | Fichier |
+|----------|---------|---------|
+| PBS | ce que l'on livre (application, documentation, gestion, fin de projet) | [PBS.md](../gestion/PBS.md) |
+| WBS | 7 lots de travail, 74 tâches T01–T74 avec responsable et charge | [WBS.md](../gestion/WBS.md) |
+| Gantt + sprints | planning semaine par semaine, jalons | [gantt.md](../gestion/gantt.md) |
+| PERT | 23 tâches structurantes, chemin critique calculé | [PERT.md](../gestion/PERT.md) |
+| Risques | 11 risques notés probabilité × impact, avec leurs parades | [risques.md](../gestion/risques.md) |
+
+Le **PERT** a guidé nos décisions. Le chemin critique (backlog → MCD → MLD → base → créer/jouer un
+quizz → console → écrans IA → bugs → démo) a montré que les données d'Akram bloquaient tout le reste.
+Elles ont donc été **poussées et fusionnées en premier**. À l'inverse, l'interface graphique avait
+6 h de marge : c'était la première fonction à réduire en cas de retard.
+
+### B.5 Suivi de l'avancement
+- **Trello** : une liste par membre plus les colonnes En cours / En revue / Terminé. Chaque carte porte
+  son identifiant (`S3 - T29 …`), une estimation, ses dépendances et un critère de fin.
+- **Comptes-rendus** de chaque séance (`docs/comptes-rendus/CR-0N.md`) : tâches prévues, temps
+  **estimé** et temps **réel**, problèmes rencontrés, décisions, écart au planning.
+- **Git** : une branche et une Pull Request relue par tâche, `main` protégée, tags de version.
+  L'historique des commits montre qui a fait quoi.
+- **Recette** du PO sur un clone propre avant chaque jalon ([fiche de recette](../gestion/recette-v1.md)).
+- **Tests automatisés** : [nombre] tests pytest, dont un scénario complet de démo.
+
+**Estimé vs réel** *(à compléter depuis les comptes-rendus)* :
+
+| Sprint | Charge estimée | Charge réelle | Écart | Explication |
+|--------|----------------|---------------|-------|-------------|
+| S2 | [ ] h | [ ] h | [ ] | [ ] |
+| S3 | [ ] h | [ ] h | [ ] | [ ] |
+| S4 | [ ] h | [ ] h | [ ] | [ ] |
+| S5 | [ ] h | [ ] h | [ ] | [ ] |
+| S6 | [ ] h | [ ] h | [ ] | [ ] |
+
+### B.6 Communication
+- **Interne** : canal d'équipe avec un fil par module, une réponse sous 24 h, et les blocages signalés
+  immédiatement ([message d'ouverture](../gestion/canal-equipe.md)).
+- **Avec le commanditaire** : mail d'ouverture avec les liens du dépôt et du Trello, puis un mail de
+  point en fin de séance si besoin ([modèle](../gestion/mail-fin-de-seance.md)).
+
+### B.7 Amélioration continue
+À chaque fin de sprint, une **rétrospective** « Garder / Arrêter / Essayer » fixe **une** action pour le
+sprint suivant, vérifiée à la rétrospective d'après ([rétrospectives](../gestion/retrospectives.md)).
+*[Citer ici 2 actions réelles et leur effet, ex. : « S4 : on attendait la fin de séance pour commiter →
+décision : commit à chaque étape → S5 : 3× plus de commits, plus aucun conflit »]*
+
+---
+
+## C. Autonomie de l'équipe et gestion des difficultés
+*[Sprint S7 — Jaafar. Auto-formation (Tkinter, SQLite, Git, API IA), appels aux enseignants, initiatives
+(assistant IA, interface graphique), cohésion, difficultés relationnelles et leur résolution.]*
+
+## D. Réalisation technique
+*[Sprint S7 — Akram et Sami. Architecture en couches, MCD/MLD, sécurité, choix techniques et
+solutions écartées, validation par les tests. Base : `docs/conception/`.]*
+
+## E. Bilan et perspectives
+*[Sprint S7 — Jaafar. Fonctionnalités livrées / non livrées, évaluation critique, difficultés,
+pistes : multijoueur, modèle IA local, export PDF des résultats…]*
+
+## Annexes
+- Gantt réel vs prévu (T68)
+- Comptes-rendus de séance
+- Fiche de recette
