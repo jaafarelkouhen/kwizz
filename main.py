@@ -8,7 +8,8 @@ from quizz.database import connexion
 
 
 def main():
-    sys.stdout.reconfigure(encoding="utf-8")  # accents et symboles sur toutes les consoles Windows
+    if sys.stdout is not None:  # None quand on lance sans console (pythonw, double-clic)
+        sys.stdout.reconfigure(encoding="utf-8")  # accents et symboles sur toutes les consoles Windows
     con = connexion()
     auth.creer_admin_par_defaut(con)
     try:
