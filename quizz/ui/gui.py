@@ -4,6 +4,7 @@ Elle appelle EXACTEMENT les mêmes services que la console (auth, quiz_service, 
 aucun SQL ici. Chaque écran est un tk.Frame ; l'application remplace l'écran affiché.
 La création et la modification de quizz restent dans la console (python main.py).
 """
+import threading
 import time
 import tkinter as tk
 from pathlib import Path
@@ -18,6 +19,40 @@ POLICE = ("Segoe UI", 11)
 POLICE_TITRE = ("Segoe UI", 15, "bold")
 POLICE_QUESTION = ("Segoe UI", 13)
 ROUGE, VERT, GRIS = "#c0392b", "#1e8449", "#666666"
+
+
+def executer_en_fond(widget: tk.Misc, travail, quand_fini):
+    """Lance travail() dans un thread pour ne pas figer la fenêtre pendant un appel à l'IA.
+
+    Tkinter ne doit être touché que depuis le thread principal : le thread se contente de
+    calculer, et on vérifie toutes les 100 ms (after) s'il a fini avant d'appeler
+    quand_fini(resultat, erreur) dans le thread principal.
+    """
+    boite = {}
+
+    def fond():
+        try:
+            boite["resultat"] = travail()
+        except client_ia.ErreurIA as e:
+            boite["erreur"] = e
+        except Exception as e:  # imprévu : on l'affiche plutôt que de laisser l'écran bloqué
+            boite["erreur"] = client_ia.ErreurIA(f"Erreur inattendue : {e}")
+
+    fil = threading.Thread(target=fond, daemon=True)
+    fil.start()
+
+    def verifier():
+        try:
+            if not widget.winfo_exists():
+                return  # fenêtre fermée entre-temps : on abandonne le résultat
+        except tk.TclError:
+            return
+        if fil.is_alive():
+            widget.after(100, verifier)
+        else:
+            quand_fini(boite.get("resultat"), boite.get("erreur"))
+
+    widget.after(100, verifier)
 
 
 class Application(tk.Tk):
@@ -390,16 +425,19 @@ class EcranResultat(Ecran):
         return ligne, ok
 
     def expliquer(self, q):
-        """US17 : explication de l'IA dans une boîte de dialogue."""
+        """US17 : explication de l'IA dans une boîte de dialogue (appel en arrière-plan)."""
         self.info("⏳ L'IA prépare l'explication…")
-        self.update_idletasks()
-        try:
-            texte = explications.expliquer(q, self.reponses.get(q.id_question, set()))
-        except client_ia.ErreurIA as e:
-            self.erreur(str(e))
-            return
-        self.message.config(text="")
-        messagebox.showinfo("Pourquoi ?", f"{q.enonce}\n\n{texte}", parent=self)
+        self.en_cours = True
+
+        def fini(texte, erreur):
+            self.en_cours = False
+            if erreur:
+                self.erreur(str(erreur))
+                return
+            self.message.config(text="")
+            messagebox.showinfo("Pourquoi ?", f"{q.enonce}\n\n{texte}", parent=self)
+
+        executer_en_fond(self, lambda: explications.expliquer(q, self.reponses.get(q.id_question, set())), fini)
 
 
 # ---------------------------------------------------------------- historique (US07) et classement (US12)
@@ -479,21 +517,27 @@ class FenetreGenerationIA(tk.Toplevel):
         tk.Button(bas, text="Fermer", width=14, command=self.destroy).pack(side="left", padx=4)
 
     def generer(self):
-        self.message.config(text="⏳ L'IA prépare le quizz…", fg=GRIS)
-        self.bouton_generer.config(state="disabled")
-        self.update_idletasks()
         try:
-            self.quizz = generateur.generer_quizz(self.sujet.get("1.0", "end"), int(self.nb.get()),
-                                                  self.depuis_texte.get())
-        except (client_ia.ErreurIA, ValueError) as e:
-            self.quizz = None
-            self.message.config(text=str(e) if isinstance(e, client_ia.ErreurIA) else "Nombre de questions invalide.",
-                                fg=ROUGE)
-        else:
-            self.message.config(text="Relisez l'aperçu, puis enregistrez ou relancez une génération.", fg=VERT)
-        finally:
+            nb = int(self.nb.get())
+        except ValueError:
+            self.message.config(text="Nombre de questions invalide.", fg=ROUGE)
+            return
+        sujet, depuis_texte = self.sujet.get("1.0", "end"), self.depuis_texte.get()
+        self.message.config(text="⏳ L'IA prépare le quizz… (la fenêtre reste utilisable)", fg=GRIS)
+        self.bouton_generer.config(state="disabled")
+        self.en_cours = True
+
+        def fini(quizz, erreur):
+            self.en_cours = False
             self.bouton_generer.config(state="normal")
-        self.afficher_apercu()
+            self.quizz = quizz
+            if erreur:
+                self.message.config(text=str(erreur), fg=ROUGE)
+            else:
+                self.message.config(text="Relisez l'aperçu, puis enregistrez ou relancez une génération.", fg=VERT)
+            self.afficher_apercu()
+
+        executer_en_fond(self, lambda: generateur.generer_quizz(sujet, nb, depuis_texte), fini)
 
     def afficher_apercu(self):
         self.apercu.config(state="normal")
