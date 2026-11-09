@@ -135,7 +135,50 @@ décision : commit à chaque étape → S5 : 3× plus de commits, plus aucun con
 (assistant IA, interface graphique), cohésion, difficultés relationnelles et leur résolution.]*
 
 ## D. Réalisation technique
-*[D.1 Architecture et D.4 Moteur : Sami · D.5 Interfaces et D.6 Validation : Nour]*
+*[D.5 Interfaces et D.6 Validation : Nour]*
+
+### D.1 Architecture logicielle *(Sami)*
+Kwizz suit une **architecture en couches** ([architecture.md](../conception/architecture.md)) :
+- la **présentation** (`ui/cli.py`, `ui/gui.py`) ;
+- les **services métier** (`auth`, `quiz_service`, `importer`, `ia/`) ;
+- les **données** (`models`, `database`).
+
+Chaque couche n'appelle que celle du dessous, selon trois règles :
+1. l'interface n'écrit **jamais de SQL** ;
+2. les services ne font **jamais de `print()` ni d'`input()`** : ils renvoient des valeurs ou lèvent une
+   exception métier (`ErreurAuth`, `ErreurQuizz`, `ErreurFormat`, `ErreurIA`) ;
+3. l'IA est un module **optionnel**, isolé derrière un client unique.
+
+**Bénéfices constatés.** La console et l'interface graphique partagent 100 % de la logique : la GUI a
+été ajoutée au sprint S5 sans toucher aux services. Les services se testent sans interface. Et le
+travail se répartit naturellement entre les membres (une couche chacun), ce qui limite les conflits
+Git.
+
+**Modularité et paramétrage.** Le chemin de la base, le modèle d'IA et l'activation de l'IA se règlent
+sans toucher au code (`.env`). Les quizz entrent et sortent par des **formats documentés**
+([formats.md](../conception/formats.md)).
+
+### D.4 Moteur de quizz et import/export *(Sami)*
+- **Création et modification** dans une **transaction** (`with con:`) : un quizz est enregistré en
+  entier ou pas du tout. Les mêmes règles de validation (`valider`) s'appliquent partout : saisie,
+  import, modification, IA.
+- **Correction** : une question est juste si l'ensemble des choix cochés est **exactement** l'ensemble
+  des bonnes réponses. La comparaison se fait par **identifiants**, si bien que le mélange des
+  questions (US13) ne change pas le score.
+- **Minuterie** (US09) : la logique du temps (`temps_restant`, `temps_ecoule`) est dans le service, ce
+  qui la rend testable en simulant l'horloge. La console vérifie le temps après chaque réponse
+  (`input()` ne peut pas être interrompu) ; l'interface graphique, elle, coupe en direct.
+- **Import texte** (US06) : lecture ligne par ligne, avec une erreur qui donne le **numéro de ligne**.
+  Les fichiers « UTF-8 avec BOM » du Bloc-notes Windows sont acceptés : ce bug a été trouvé et corrigé
+  au sprint S7.
+- **JSON** (US10) : un format versionné (`format`, `version`), sans les identifiants de la base, donc
+  importable partout. **Ce même format est imposé à l'IA** : un quizz généré passe par le même code de
+  lecture et de validation qu'un fichier.
+- **Solutions écartées** :
+  - modifier les questions une par une → rejetée, au profit du remplacement complet dans une
+    transaction (plus simple et plus sûr ; conséquence documentée : le détail des anciennes réponses
+    est perdu, mais les scores restent) ;
+  - YAML comme format d'échange → rejeté (bibliothèque externe, pas de gain pour nos besoins).
 
 ### D.2 Données : du MCD à SQLite *(Akram)*
 Le **MCD** ([MCD.md](../conception/MCD.md), [schéma draw.io](../conception/MCD-Kwizz.drawio)) compte
