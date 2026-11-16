@@ -376,9 +376,23 @@ dans les écrans. Aucun essai avec une vraie clé n'a été consigné : la démo
 - **Questions à choix multiples** dans l'interface (le moteur et la base le permettent déjà).
 - Création et modification de quizz **dans l'interface graphique**.
 - **Modèle IA local** (Ollama) : gratuit, hors ligne, sans envoi de données (voir l'étude IA).
-- **Mode multijoueur** en réseau, ou une version web.
+- **Mode multijoueur** en réseau.
 - **Statistiques** par question (taux de réussite) pour aider l'administrateur à améliorer ses quizz.
 - Export des résultats en **PDF ou CSV** pour un enseignant.
+
+#### Une version web et une v2.1 orientée « données fiables »
+
+À la demande du client, nous avons réalisé **MyKwizz**, une version de Kwizz jouable dans le
+navigateur. Elle réutilise sans le modifier le paquet `quizz/` (mêmes règles de correction, même base
+SQLite) : seule la couche d'interface change. C'est une validation concrète de notre architecture en
+couches (partie D) : remplacer l'interface n'a pas demandé de réécrire la logique métier.
+
+Une revue de cette version a fait apparaître une limite de notre modèle de données : modifier ou
+supprimer un quizz efface, par cascade, le détail des parties déjà jouées. Nous proposons donc une
+v2.1 centrée sur la fiabilité des données : versionner le schéma (US20), archiver au lieu de
+supprimer (US21), enregistrer le résultat de chaque question (US22) et réserver l'explication par
+l'IA aux questions déjà jouées (US23). Ces données rendraient possibles un historique détaillé et des
+statistiques par question pour l'administrateur, deux écrans déjà maquettés. Le détail est dans `docs/gestion/backlog-v2.1.md`.
 
 ### E.4 Documentation produite
 README (installation, utilisation, IA), glossaire, conception (MCD, MLD, architecture, formats, cas
