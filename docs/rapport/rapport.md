@@ -140,7 +140,7 @@ Plusieurs technologies n'avaient pas été vues en cours. Chaque membre s'est fo
 module ; le résultat est visible dans le dépôt :
 | Sujet | Qui | Où on le voit dans le projet |
 |-------|-----|------------------------------|
-| Git en équipe (branches, Pull Requests) | tous | 55 PR fusionnées, [workflow Git](../gestion/workflow-git.md) |
+| Git en équipe (branches, Pull Requests) | tous | 56 PR fusionnées au 09/11, [workflow Git](../gestion/workflow-git.md) |
 | SQLite, contraintes et migrations | Akram | `quizz/database.py`, [schéma SQL](../conception/schema.sql) |
 | Hachage des mots de passe (PBKDF2, sel) | Akram | `quizz/auth.py` |
 | Tkinter (interface graphique) | Nour | `quizz/ui/gui.py` |
@@ -361,8 +361,9 @@ dans les écrans. Aucun essai avec une vraie clé n'a été consigné : la démo
   recette sur **plusieurs PC** dès le sprint S4 les aurait trouvés plus tôt.
 - **le tableau Trello a pris du retard sur le code** : le 09/11, 22 cartes déjà livrées n'étaient pas
   cochées, et les colonnes « En cours » et « En revue » n'ont pas servi ;
-- **la charge visible sur GitHub est inégale** : le PO a fusionné 24 PR, dont 5 qu'il a poussées pour
-  débloquer un coéquipier ; une meilleure répartition dès le départ aurait évité ces reprises.
+- **la charge visible sur GitHub est inégale** : le PO a fusionné 42 PR sur 56 et poussé 25 commits,
+  dont 2 à la place d'un coéquipier (l'écran « Modifier un quizz » et la partie D « données » du
+  rapport) ; une meilleure répartition dès le départ aurait évité ces reprises.
 
 **Limites connues du produit :**
 - en console, la minuterie est vérifiée **après** chaque réponse (`input()` ne peut pas être
