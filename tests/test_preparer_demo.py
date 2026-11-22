@@ -14,7 +14,8 @@ def test_base_de_demo_complete(tmp_path):
     assert preparer_demo.main(["--base", str(base)]) == 0
 
     con = connexion(base)
-    assert len(qs.lister_quizz(con)) == 3
+    exemples = Path(__file__).resolve().parent.parent / "data" / "exemples"
+    assert len(qs.lister_quizz(con)) == len(list(exemples.glob("*.txt")))  # tous les quizz d'exemple
     admin = auth.connecter(con, "admin", "admin")
     assert auth.utilise_mot_de_passe_par_defaut(con, admin)          # pour montrer US15
     capitales = next(q for q in qs.lister_quizz(con) if q.titre == "Capitales d'Europe")

@@ -1,0 +1,46 @@
+# TITRE: Grandes dates du monde
+# THEME: Histoire
+# DESCRIPTION: Antiquité, guerres mondiales et XXe siècle
+# DUREE: 120
+
+Q: En quelle année a commencé la Première Guerre mondiale ?
+- 1905
++ 1914
+- 1918
+- 1939
+
+Q: En quelle année a pris fin la Seconde Guerre mondiale ?
+- 1943
+- 1944
++ 1945
+- 1946
+
+Q: En quelle année le mur de Berlin est-il tombé ?
+- 1961
+- 1985
++ 1989
+- 1991
+
+Q: Qui fut le premier homme à marcher sur la Lune, en 1969 ?
++ Neil Armstrong
+- Youri Gagarine
+- Buzz Aldrin
+- John Glenn
+
+Q: Quelle civilisation a construit les pyramides de Gizeh ?
+- Les Romains
+- Les Mayas
++ Les Égyptiens de l'Antiquité
+- Les Perses
+
+Q: En quelle année Christophe Colomb atteint-il l'Amérique ?
+- 1453
++ 1492
+- 1515
+- 1607
+
+Q: Quelle organisation a été créée en 1945 pour maintenir la paix dans le monde ?
+- La Société des Nations
++ L'Organisation des Nations unies (ONU)
+- L'OTAN
+- L'Union européenne

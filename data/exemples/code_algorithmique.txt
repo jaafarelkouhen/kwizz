@@ -1,0 +1,52 @@
+# TITRE: Algorithmique et complexité
+# THEME: Code
+# DESCRIPTION: Tris, recherche, complexité et structures de données
+# DUREE: 150
+
+Q: Quelle est la complexité de la recherche dichotomique dans un tableau trié de n éléments ?
+- O(n)
++ O(log n)
+- O(n log n)
+- O(1)
+
+Q: Quelle structure de données suit le principe « dernier entré, premier sorti » (LIFO) ?
++ Une pile
+- Une file
+- Un arbre binaire
+- Une table de hachage
+
+Q: Quelle est la complexité moyenne du tri fusion ?
+- O(n)
+- O(n²)
++ O(n log n)
+- O(log n)
+
+Q: Quel tri a une complexité O(n²) dans le pire des cas ?
++ Le tri à bulles
+- Le tri fusion
+- Le tri par tas
+- Aucun de ces tris
+
+Q: Qu'est-ce qu'une fonction récursive ?
+- Une fonction sans paramètre
++ Une fonction qui s'appelle elle-même
+- Une fonction qui renvoie toujours None
+- Une fonction définie dans une classe
+
+Q: Combien de valeurs différentes peut-on coder sur 8 bits ?
+- 128
++ 256
+- 255
+- 512
+
+Q: Que vaut 1010 (en binaire) en décimal ?
+- 8
++ 10
+- 12
+- 5
+
+Q: Quelles structures sont linéaires ? (plusieurs réponses)
++ Une liste chaînée
++ Une file
+- Un graphe
+- Un arbre

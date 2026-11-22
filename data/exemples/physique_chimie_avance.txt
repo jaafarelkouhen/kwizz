@@ -1,0 +1,46 @@
+# TITRE: Énergie et réactions chimiques
+# THEME: Physique-Chimie
+# DESCRIPTION: Conservation, réactions, tableau périodique
+# DUREE: 150
+
+Q: Que dit la loi de Lavoisier ?
++ Rien ne se perd, rien ne se crée, tout se transforme
+- Toute action entraîne une réaction égale et opposée
+- L'énergie d'un système isolé augmente toujours
+- La pression est proportionnelle au volume
+
+Q: Quelle est l'unité de l'énergie dans le Système international ?
++ Le joule
+- Le watt
+- Le volt
+- L'ampère
+
+Q: Quelle formule donne l'énergie cinétique d'un objet de masse m et de vitesse v ?
+- m × g × h
++ ½ × m × v²
+- m × v
+- m × a
+
+Q: Quel gaz est produit par la combustion complète du carbone dans le dioxygène ?
+- Le méthane
++ Le dioxyde de carbone (CO2)
+- Le diazote
+- L'hydrogène
+
+Q: Combien vaut l'accélération de la pesanteur à la surface de la Terre (environ) ?
+- 1,6 m/s²
++ 9,8 m/s²
+- 98 m/s²
+- 3,7 m/s²
+
+Q: Quel est le numéro atomique du carbone ?
+- 4
++ 6
+- 8
+- 12
+
+Q: Une solution de pH 2 est…
++ acide
+- neutre
+- basique
+- impossible

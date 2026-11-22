@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MyKwizz</title>
+<meta name="description" content="MyKwizz, la version web de Kwizz : des quizz à jouer, corriger et créer.">
+<meta name="theme-color" content="#F6F6FA">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/vitrine.css">
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<div class="app" id="app">
+  <header class="rail" id="rail" hidden>
+    <a class="marque" href="#/" aria-label="MyKwizz, accueil"></a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#/" data-route="jouer">Jouer</a>
+      <a href="#/historique" data-route="historique">Historique</a>
+      <a href="#/classements" data-route="classements">Classements</a>
+      <a href="#/assistant" data-route="assistant">Assistant</a>
+      <a href="#/moi" data-route="moi">Mon espace</a>
+      <a href="#/admin" data-route="admin" id="lien-admin" hidden>Administration</a>
+    </nav>
+    <div class="rail-pied">
+      <p class="qui" id="qui"></p>
+      <button class="lien-discret" id="deconnexion" type="button">Se déconnecter</button>
+    </div>
+  </header>
+  <main class="contenu" id="contenu" tabindex="-1"></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog class="dialogue" id="dialogue"></dialog>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="/vitrine.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

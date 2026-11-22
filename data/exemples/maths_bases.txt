@@ -1,0 +1,52 @@
+# TITRE: Calcul et algèbre
+# THEME: Mathématiques
+# DESCRIPTION: Calcul mental, équations et puissances
+# DUREE: 150
+
+Q: Combien font 7 × 8 ?
+- 54
++ 56
+- 58
+- 64
+
+Q: Quelle est la solution de 2x + 3 = 11 ?
+- x = 3
++ x = 4
+- x = 5
+- x = 7
+
+Q: Que vaut 2 puissance 10 ?
+- 512
++ 1024
+- 2048
+- 100
+
+Q: Quelle est la racine carrée de 144 ?
+- 11
++ 12
+- 14
+- 72
+
+Q: Quelles valeurs sont des nombres premiers ? (plusieurs réponses)
++ 2
++ 13
+- 21
+- 1
+
+Q: Développer (a + b)² donne…
+- a² + b²
++ a² + 2ab + b²
+- 2a + 2b
+- a² − 2ab + b²
+
+Q: 25 % de 80 vaut…
+- 15
++ 20
+- 25
+- 32
+
+Q: Quel est le discriminant de x² − 5x + 6 ?
++ 1
+- 25
+- −1
+- 49

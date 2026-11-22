@@ -1,0 +1,46 @@
+# TITRE: Web et SQL
+# THEME: Code
+# DESCRIPTION: HTML, CSS, HTTP et requêtes SQL
+# DUREE: 120
+
+Q: Que signifie HTML ?
++ HyperText Markup Language
+- High Transfer Machine Language
+- HyperText Machine Logic
+- Home Tool Markup Language
+
+Q: Quel code de statut HTTP signifie « ressource introuvable » ?
+- 200
+- 301
++ 404
+- 500
+
+Q: Quelle propriété CSS change la couleur du texte ?
+- background-color
++ color
+- font-style
+- text-color
+
+Q: Quelle commande SQL lit des lignes d'une table ?
+- INSERT
+- UPDATE
++ SELECT
+- DELETE
+
+Q: Quelle clause SQL filtre les lignes avant le regroupement ?
++ WHERE
+- HAVING
+- ORDER BY
+- LIMIT
+
+Q: Pour se protéger des injections SQL, il faut…
+- échapper les guillemets à la main
++ utiliser des requêtes paramétrées
+- mettre la requête en majuscules
+- limiter la taille de la base
+
+Q: Pourquoi stocke-t-on un hash (avec sel) d'un mot de passe plutôt que le mot de passe ?
+- Pour qu'il prenne moins de place
++ Pour qu'une fuite de la base ne révèle pas les mots de passe
+- Pour pouvoir le renvoyer par e-mail
+- Pour accélérer la connexion

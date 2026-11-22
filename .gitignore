@@ -11,3 +11,6 @@ dist/
 
 # Secrets (clé API IA) — ne jamais commiter
 .env
+
+# Version web
+serveur.log

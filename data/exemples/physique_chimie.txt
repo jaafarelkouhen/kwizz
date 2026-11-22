@@ -1,0 +1,52 @@
+# TITRE: Physique-Chimie : les bases
+# THEME: Physique-Chimie
+# DESCRIPTION: Atomes, énergie, électricité et mouvement
+# DUREE: 150
+
+Q: Quel est le symbole chimique de l'eau ?
+- HO
++ H2O
+- O2H
+- H2O2
+
+Q: Quel est le symbole chimique du sodium ?
+- So
+- S
++ Na
+- Sd
+
+Q: Quelle est l'unité de la force dans le Système international ?
+- Le joule
++ Le newton
+- Le watt
+- Le pascal
+
+Q: Quelle est la loi d'Ohm ?
++ U = R × I
+- P = U × I
+- E = m × c²
+- F = m × a
+
+Q: Quelle est la vitesse de la lumière dans le vide (environ) ?
+- 300 000 m/s
++ 300 000 km/s
+- 30 000 km/s
+- 3 000 000 km/s
+
+Q: Quel est le pH d'une solution neutre à 25 °C ?
+- 0
+- 1
++ 7
+- 14
+
+Q: À quelle température l'eau pure bout-elle sous pression atmosphérique normale ?
+- 90 °C
++ 100 °C
+- 110 °C
+- 120 °C
+
+Q: De quoi est composé le noyau d'un atome ? (plusieurs réponses)
++ Des protons
++ Des neutrons
+- Des électrons
+- Des photons

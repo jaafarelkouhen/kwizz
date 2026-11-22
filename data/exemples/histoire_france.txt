@@ -1,0 +1,46 @@
+# TITRE: Histoire de France
+# THEME: Histoire
+# DESCRIPTION: Des rois à la Ve République
+# DUREE: 120
+
+Q: En quelle année a eu lieu la prise de la Bastille ?
+- 1776
++ 1789
+- 1792
+- 1815
+
+Q: Qui a été sacré empereur des Français en 1804 ?
+- Louis XVI
++ Napoléon Bonaparte
+- Louis-Philippe
+- Charles de Gaulle
+
+Q: Quel roi était surnommé le « Roi-Soleil » ?
+- Louis XIII
++ Louis XIV
+- Louis XV
+- Henri IV
+
+Q: En quelle année les femmes ont-elles voté pour la première fois en France ?
+- 1918
+- 1936
++ 1945
+- 1968
+
+Q: Quelle bataille de 1815 marque la défaite définitive de Napoléon ?
+- Austerlitz
+- Trafalgar
++ Waterloo
+- Iéna
+
+Q: En quelle année la Ve République a-t-elle été fondée ?
+- 1946
++ 1958
+- 1962
+- 1981
+
+Q: Quelle loi de 1905 sépare les Églises et l'État ?
++ La loi de séparation des Églises et de l'État
+- L'édit de Nantes
+- Le Concordat
+- La loi Ferry

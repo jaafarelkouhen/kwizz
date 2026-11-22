@@ -1,0 +1,46 @@
+# TITRE: Le corps humain
+# THEME: SVT
+# DESCRIPTION: Organes, cellules et grandes fonctions
+# DUREE: 120
+
+Q: Quel organe pompe le sang dans tout le corps ?
+- Les poumons
++ Le cœur
+- Le foie
+- Les reins
+
+Q: Combien de chromosomes possède une cellule humaine (hors gamètes) ?
+- 23
++ 46
+- 44
+- 48
+
+Q: Où sont stockées les informations génétiques dans une cellule ?
+- Dans la membrane
++ Dans l'ADN du noyau
+- Dans les ribosomes
+- Dans le cytoplasme uniquement
+
+Q: Quels globules transportent le dioxygène ?
++ Les globules rouges (hématies)
+- Les globules blancs
+- Les plaquettes
+- Les neurones
+
+Q: Quel est le plus grand organe du corps humain ?
+- Le foie
+- Le cerveau
++ La peau
+- L'intestin
+
+Q: Quel organe filtre le sang pour produire l'urine ?
+- Le pancréas
++ Les reins
+- La rate
+- L'estomac
+
+Q: Combien d'os compte environ le squelette d'un adulte ?
+- 106
++ 206
+- 306
+- 156
