@@ -10,14 +10,14 @@ def preparer(con):
 
 
 def jouer(con, login, quizz, nb_justes):
-    user = auth.connecter(con, login, "1234")
+    user = auth.connecter(con, login, "motdepasse1")
     reponses = {q.id_question: {q.bonnes_reponses()[0].id_choix} for q in quizz.questions[:nb_justes]}
     qs.enregistrer_tentative(con, user.id_utilisateur, quizz, reponses)
 
 
 def test_meilleur_score_par_joueur_trie(con):
     for login in ("alice", "bob", "chloe"):
-        auth.inscrire(con, login, "1234")
+        auth.inscrire(con, login, "motdepasse1")
     q = preparer(con)
     jouer(con, "alice", q, 1)
     jouer(con, "alice", q, 2)      # son meilleur score compte, pas le dernier ni la moyenne
@@ -29,7 +29,7 @@ def test_meilleur_score_par_joueur_trie(con):
 
 def test_un_joueur_n_apparait_qu_une_fois_et_limite(con):
     for login in ("alice", "bob"):
-        auth.inscrire(con, login, "1234")
+        auth.inscrire(con, login, "motdepasse1")
     q = preparer(con)
     for _ in range(3):
         jouer(con, "alice", q, 2)

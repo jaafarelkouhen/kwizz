@@ -45,8 +45,8 @@ def test_mauvais_mot_de_passe_affiche_une_erreur(app):
 
 
 def test_inscription_puis_liste(app, monkeypatch):
-    repondre_aux_dialogues(monkeypatch, "secret")
-    remplir(app.ecran, "alice", "secret")
+    repondre_aux_dialogues(monkeypatch, "secret123")
+    remplir(app.ecran, "alice", "secret123")
     app.ecran.inscrire()
     assert isinstance(app.ecran, gui.EcranListe) and app.user.login == "alice"
 
@@ -62,7 +62,7 @@ def test_admin_par_defaut_doit_changer_son_mot_de_passe(app, monkeypatch):
 
 def test_partie_complete(app):
     quizz_deux_questions(app.con)
-    app.user = auth.inscrire(app.con, "bob", "1234")
+    app.user = auth.inscrire(app.con, "bob", "motdepasse1")
     liste = app.afficher(gui.EcranListe)
     liste.liste.selection_set(0)
     liste.jouer()
@@ -82,7 +82,7 @@ def test_partie_complete(app):
 
 def test_minuterie_termine_la_partie(app, monkeypatch):
     quizz_deux_questions(app.con, duree=30)
-    app.user = auth.inscrire(app.con, "bob", "1234")
+    app.user = auth.inscrire(app.con, "bob", "motdepasse1")
     temps = [0.0]
     monkeypatch.setattr(gui.time, "monotonic", lambda: temps[0])
     jeu = app.afficher(gui.EcranJeu, qs.charger_quizz(app.con, 1))
@@ -97,7 +97,7 @@ def test_minuterie_termine_la_partie(app, monkeypatch):
 
 def test_historique_et_classement(app):
     id_q = quizz_deux_questions(app.con)
-    app.user = auth.inscrire(app.con, "bob", "1234")
+    app.user = auth.inscrire(app.con, "bob", "motdepasse1")
     q = qs.charger_quizz(app.con, id_q)
     qs.enregistrer_tentative(app.con, app.user.id_utilisateur, q, {})
 
@@ -109,7 +109,7 @@ def test_historique_et_classement(app):
 
 def test_selection_obligatoire_avant_de_jouer(app):
     quizz_deux_questions(app.con)
-    app.user = auth.inscrire(app.con, "bob", "1234")
+    app.user = auth.inscrire(app.con, "bob", "motdepasse1")
     liste = app.afficher(gui.EcranListe)
     liste.jouer()
     assert "Sélectionnez" in liste.message.cget("text")

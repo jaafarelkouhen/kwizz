@@ -37,19 +37,20 @@ def test_login_unique_au_niveau_de_la_base(con):
 
 
 def test_supprimer_un_quizz_supprime_tout_son_contenu(con):
-    u = auth.inscrire(con, "bob", "1234")
+    u = auth.inscrire(con, "bob", "motdepasse1")
     q = creer_quizz(con)
     question = q.questions[0]
     qs.enregistrer_tentative(con, u.id_utilisateur, q, {question.id_question: {question.choix[0].id_choix}})
 
-    qs.supprimer_quizz(con, q.id_quizz)
+    with con:  # la cascade du schéma (MLD) ; qs.supprimer_quizz archive un quizz joué au lieu de l'effacer
+        con.execute("DELETE FROM quizz WHERE id_quizz = ?", (q.id_quizz,))
 
-    for table in ("question", "choix", "tentative", "reponse"):
+    for table in ("question", "choix", "tentative", "reponse", "resultat_question"):
         assert compter(con, table) == 0, f"la table {table} n'a pas été vidée en cascade"
 
 
 def test_supprimer_le_createur_garde_ses_quizz(con):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     q = creer_quizz(con, id_createur=admin.id_utilisateur)
 
     with con:
@@ -60,7 +61,7 @@ def test_supprimer_le_createur_garde_ses_quizz(con):
 
 
 def test_supprimer_un_joueur_supprime_ses_tentatives(con):
-    u = auth.inscrire(con, "bob", "1234")
+    u = auth.inscrire(con, "bob", "motdepasse1")
     q = creer_quizz(con)
     qs.enregistrer_tentative(con, u.id_utilisateur, q, {})
 

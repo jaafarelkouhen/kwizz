@@ -16,11 +16,11 @@ def jouer(con, user, quizz, justes):
 
 
 def test_aucun_quizz(con):
-    assert recommander(con, auth.inscrire(con, "bob", "1234").id_utilisateur) is None
+    assert recommander(con, auth.inscrire(con, "bob", "motdepasse1").id_utilisateur) is None
 
 
 def test_quizz_jamais_joue_en_priorite(con):
-    bob = auth.inscrire(con, "bob", "1234")
+    bob = auth.inscrire(con, "bob", "motdepasse1")
     a, b = creer(con, "A"), creer(con, "B")
     jouer(con, bob, a, 0)
     r = recommander(con, bob.id_utilisateur)
@@ -28,7 +28,7 @@ def test_quizz_jamais_joue_en_priorite(con):
 
 
 def test_sinon_le_plus_faible_meilleur_score(con):
-    bob = auth.inscrire(con, "bob", "1234")
+    bob = auth.inscrire(con, "bob", "motdepasse1")
     a, b = creer(con, "A", 2), creer(con, "B", 4)
     jouer(con, bob, a, 1)     # 50 %
     jouer(con, bob, b, 3)     # 75 %
@@ -38,14 +38,14 @@ def test_sinon_le_plus_faible_meilleur_score(con):
 
 
 def test_tout_reussi_rien_a_recommander(con):
-    bob = auth.inscrire(con, "bob", "1234")
+    bob = auth.inscrire(con, "bob", "motdepasse1")
     a = creer(con, "A")
     jouer(con, bob, a, 2)
     assert recommander(con, bob.id_utilisateur) is None
 
 
 def test_les_parties_des_autres_ne_comptent_pas(con):
-    bob, alice = auth.inscrire(con, "bob", "1234"), auth.inscrire(con, "alice", "1234")
+    bob, alice = auth.inscrire(con, "bob", "motdepasse1"), auth.inscrire(con, "alice", "motdepasse1")
     a = creer(con, "A")
     jouer(con, alice, a, 2)
     assert recommander(con, bob.id_utilisateur).quizz.titre == "A"

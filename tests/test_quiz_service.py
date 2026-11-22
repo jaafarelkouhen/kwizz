@@ -25,7 +25,7 @@ def test_quizz_sans_bonne_reponse_refuse(con):
 
 
 def test_score_et_historique(con):
-    u = auth.inscrire(con, "bob", "1234")
+    u = auth.inscrire(con, "bob", "motdepasse1")
     q = qs.charger_quizz(con, qs.enregistrer_quizz(con, quizz_exemple()))
     q1, q2 = q.questions
     reponses = {q1.id_question: {q1.choix[1].id_choix},   # juste

@@ -20,7 +20,7 @@ class Recommandation:
 
 
 def recommander(con: sqlite3.Connection, id_utilisateur: int) -> Recommandation | None:
-    tous = qs.lister_quizz(con)
+    tous = qs.lister_quizz(con, publies_seulement=True)
     if not tous:
         return None
     meilleurs: dict[int, tuple[int, int]] = {}  # id_quizz → (meilleur score, nb de questions)
@@ -31,11 +31,11 @@ def recommander(con: sqlite3.Connection, id_utilisateur: int) -> Recommandation 
 
     jamais_joues = [q for q in tous if q.id_quizz not in meilleurs]
     if jamais_joues:
-        return Recommandation(jamais_joues[0], "vous ne l'avez jamais joué")
+        return Recommandation(jamais_joues[0], "tu ne l'as jamais joué")
 
     a_retenter = [q for q in tous if meilleurs[q.id_quizz][0] < meilleurs[q.id_quizz][1]]
     if not a_retenter:
         return None
     pire = min(a_retenter, key=lambda q: meilleurs[q.id_quizz][0] / meilleurs[q.id_quizz][1])
     score, total = meilleurs[pire.id_quizz]
-    return Recommandation(pire, f"votre meilleur score est {score}/{total} : retentez votre chance")
+    return Recommandation(pire, f"ton meilleur score est {score}/{total} : retente ta chance")

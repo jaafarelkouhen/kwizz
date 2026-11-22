@@ -48,14 +48,14 @@ def un_quizz(con):
 
 # ---------------------------------------------------------------- console
 def test_sans_ia_le_menu_admin_n_affiche_pas_la_generation(con, monkeypatch, capsys):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     clavier(monkeypatch, "9")                       # Se déconnecter
     cli.session(con, admin)
     assert "Générer un quizz avec l'IA" not in capsys.readouterr().out
 
 
 def test_generation_console_avec_relecture(con, monkeypatch, ia, capsys):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     clavier(monkeypatch, "1", "les volcans", "1",   # thème, sujet, 1 question
             "", "o")                                # pas de minuterie, enregistrer
     cli.ecran_generer_ia(con, admin)
@@ -67,7 +67,7 @@ def test_generation_console_avec_relecture(con, monkeypatch, ia, capsys):
 
 
 def test_generation_console_refusee_par_l_admin(con, monkeypatch, ia):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     clavier(monkeypatch, "2", "Un texte", "sur deux lignes", "FIN", "1", "", "n")
     cli.ecran_generer_ia(con, admin)
     assert qs.lister_quizz(con) == []
@@ -77,14 +77,14 @@ def test_generation_console_ia_en_panne(con, monkeypatch, ia, capsys):
     def panne(*a, **k):
         raise client.ErreurIA("Impossible de joindre l'IA")
     monkeypatch.setattr(client, "demander_json", panne)
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     clavier(monkeypatch, "1", "les volcans", "3")
     cli.ecran_generer_ia(con, admin)
     assert "Impossible de joindre" in capsys.readouterr().out and qs.lister_quizz(con) == []
 
 
 def test_explications_apres_une_erreur(con, monkeypatch, ia, capsys):
-    joueur = auth.inscrire(con, "bob", "1234")
+    joueur = auth.inscrire(con, "bob", "motdepasse1")
     un_quizz(con)
     clavier(monkeypatch, "1", "n", "1",             # quizz n°1, ordre normal, Milan (faux)
             "o", "")                                # oui aux explications, pause
@@ -93,7 +93,7 @@ def test_explications_apres_une_erreur(con, monkeypatch, ia, capsys):
 
 
 def test_recommandation_affichee_dans_le_menu(con, monkeypatch, capsys):
-    joueur = auth.inscrire(con, "bob", "1234")
+    joueur = auth.inscrire(con, "bob", "motdepasse1")
     un_quizz(con)
     clavier(monkeypatch, "4")
     cli.session(con, joueur)
@@ -109,14 +109,14 @@ def app(fenetre, con):
 
 
 def test_gui_bouton_ia_absent_sans_cle(app):
-    app.user = auth.inscrire(app.con, "prof", "1234", est_admin=True)
+    app.user = auth.inscrire(app.con, "prof", "motdepasse1", est_admin=True)
     liste = app.afficher(gui.EcranListe)
     textes = [w.cget("text") for w in liste.winfo_children() if isinstance(w, tk.Button)]
     assert not any("IA" in t for t in textes)
 
 
 def test_gui_generation_puis_enregistrement(app, ia):
-    app.user = auth.inscrire(app.con, "prof", "1234", est_admin=True)
+    app.user = auth.inscrire(app.con, "prof", "motdepasse1", est_admin=True)
     liste = app.afficher(gui.EcranListe)
     fenetre_ia = gui.FenetreGenerationIA(liste)
     fenetre_ia.sujet.insert("1.0", "les volcans")
@@ -131,7 +131,7 @@ def test_gui_generation_puis_enregistrement(app, ia):
 
 
 def test_gui_recommandation_et_pourquoi(app, ia, monkeypatch):
-    app.user = auth.inscrire(app.con, "bob", "1234")
+    app.user = auth.inscrire(app.con, "bob", "motdepasse1")
     q = un_quizz(app.con)
     liste = app.afficher(gui.EcranListe)
     assert "Capitales" in liste.recommandation.cget("text")
@@ -149,7 +149,7 @@ def test_gui_ne_se_fige_pas_pendant_l_appel_ia(app, ia, monkeypatch):
     """Pendant que l'IA « réfléchit », la fenêtre continue de répondre."""
     feu_vert = threading.Event()
     monkeypatch.setattr(client, "demander_json", lambda *a, **k: (feu_vert.wait(5), QUIZZ_IA)[1])
-    app.user = auth.inscrire(app.con, "prof", "1234", est_admin=True)
+    app.user = auth.inscrire(app.con, "prof", "motdepasse1", est_admin=True)
     fenetre_ia = gui.FenetreGenerationIA(app.afficher(gui.EcranListe))
     fenetre_ia.sujet.insert("1.0", "les volcans")
 
@@ -168,7 +168,7 @@ def test_gui_erreur_ia_affichee(app, ia, monkeypatch):
     def panne(*a, **k):
         raise client.ErreurIA("Impossible de joindre l'IA")
     monkeypatch.setattr(client, "demander_json", panne)
-    app.user = auth.inscrire(app.con, "prof", "1234", est_admin=True)
+    app.user = auth.inscrire(app.con, "prof", "motdepasse1", est_admin=True)
     fenetre_ia = gui.FenetreGenerationIA(app.afficher(gui.EcranListe))
     fenetre_ia.sujet.insert("1.0", "les volcans")
     fenetre_ia.generer()
