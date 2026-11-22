@@ -140,7 +140,7 @@ Plusieurs technologies n'avaient pas été vues en cours. Chaque membre s'est fo
 module ; le résultat est visible dans le dépôt :
 | Sujet | Qui | Où on le voit dans le projet |
 |-------|-----|------------------------------|
-| Git en équipe (branches, Pull Requests) | tous | 55 PR fusionnées, [workflow Git](../gestion/workflow-git.md) |
+| Git en équipe (branches, Pull Requests) | tous | 57 PR fusionnées au 09/11, [workflow Git](../gestion/workflow-git.md) |
 | SQLite, contraintes et migrations | Akram | `quizz/database.py`, [schéma SQL](../conception/schema.sql) |
 | Hachage des mots de passe (PBKDF2, sel) | Akram | `quizz/auth.py` |
 | Tkinter (interface graphique) | Nour | `quizz/ui/gui.py` |
@@ -298,6 +298,7 @@ La qualité est vérifiée par **123 tests automatiques** (pytest), lancés avan
 | Assistant IA | 50 | client, générateur, explications, recommandation, écrans, configuration — avec une **fausse IA** |
 | Démo de bout en bout | 1 | tout le scénario de démo rejoué dans la console |
 | Lancement | 1 | démarrage sans console (pythonw) |
+| Outils | 2 | script de préparation de la démo (sans écraser une base existante) |
 
 Les tests utilisent une **base en mémoire neuve** pour chaque test et **n'appellent jamais la vraie
 IA** : ils sont rapides, reproductibles et gratuits. En complément, le PO fait une **recette manuelle**
@@ -361,8 +362,9 @@ dans les écrans. Aucun essai avec une vraie clé n'a été consigné : la démo
   recette sur **plusieurs PC** dès le sprint S4 les aurait trouvés plus tôt.
 - **le tableau Trello a pris du retard sur le code** : le 09/11, 22 cartes déjà livrées n'étaient pas
   cochées, et les colonnes « En cours » et « En revue » n'ont pas servi ;
-- **la charge visible sur GitHub est inégale** : le PO a fusionné 24 PR, dont 5 qu'il a poussées pour
-  débloquer un coéquipier ; une meilleure répartition dès le départ aurait évité ces reprises.
+- **la charge visible sur GitHub est inégale** : le PO a fusionné 43 PR sur 57 et poussé 25 commits,
+  dont 2 à la place d'un coéquipier (l'écran « Modifier un quizz » et la partie D « données » du
+  rapport) ; une meilleure répartition dès le départ aurait évité ces reprises.
 
 **Limites connues du produit :**
 - en console, la minuterie est vérifiée **après** chaque réponse (`input()` ne peut pas être
@@ -377,22 +379,38 @@ dans les écrans. Aucun essai avec une vraie clé n'a été consigné : la démo
 - Création et modification de quizz **dans l'interface graphique**.
 - **Modèle IA local** (Ollama) : gratuit, hors ligne, sans envoi de données (voir l'étude IA).
 - **Mode multijoueur** en réseau.
-- **Statistiques** par question (taux de réussite) pour aider l'administrateur à améliorer ses quizz.
+- **Statistiques** par question (taux de réussite) pour aider l'administrateur à améliorer ses quizz : déjà faites dans MyKwizz, à reporter dans l'application de bureau.
 - Export des résultats en **PDF ou CSV** pour un enseignant.
 
-#### Une version web et une v2.1 orientée « données fiables »
+#### Une version web, MyKwizz, et ses versions 2.1 et 2.2
 
 À la demande du client, nous avons réalisé **MyKwizz**, une version de Kwizz jouable dans le
-navigateur. Elle réutilise sans le modifier le paquet `quizz/` (mêmes règles de correction, même base
-SQLite) : seule la couche d'interface change. C'est une validation concrète de notre architecture en
-couches (partie D) : remplacer l'interface n'a pas demandé de réécrire la logique métier.
+navigateur. Elle est partie du même paquet `quizz/` (mêmes règles de correction, même base SQLite) :
+seule la couche d'interface a changé, ce qui valide notre architecture en couches (partie D). Elle est
+développée dans un dépôt séparé, pour ne pas toucher à la version notée de ce dépôt.
 
-Une revue de cette version a fait apparaître une limite de notre modèle de données : modifier ou
-supprimer un quizz efface, par cascade, le détail des parties déjà jouées. Nous proposons donc une
-v2.1 centrée sur la fiabilité des données : versionner le schéma (US20), archiver au lieu de
-supprimer (US21), enregistrer le résultat de chaque question (US22) et réserver l'explication par
-l'IA aux questions déjà jouées (US23). Ces données rendraient possibles un historique détaillé et des
-statistiques par question pour l'administrateur, deux écrans déjà maquettés. Le détail est dans `docs/gestion/backlog-v2.1.md`.
+Une revue de cette version (16/10) a fait apparaître une limite de notre modèle de données : modifier
+ou supprimer un quizz effaçait, par cascade, le détail des parties déjà jouées. Nous avons donc fait
+une **v2.1 « données fiables »** (cartes US20 à US39 sur Trello) :
+- **données** : schéma versionné (migrations numérotées), un quizz joué est archivé au lieu d'être
+  effacé, et le résultat de chaque question est enregistré, ce qui permet de **revoir le corrigé**
+  de n'importe quelle partie passée ;
+- **sécurité** : mots de passe hachés avec PBKDF2 à 600 000 itérations (recommandation OWASP), règles
+  de mot de passe, logins sans souci de majuscules, sessions et blocage après 3 essais gardés en base,
+  « Pourquoi ? » réservé aux questions déjà jouées (sinon l'IA donnerait les réponses) ;
+- **administration** : tableau de bord (activité, réussite par quizz et par thème, questions les plus
+  ratées), gestion des comptes, journal d'activité et historique de chaque joueur, et un cycle
+  **brouillon → tester → valider** avant qu'un quizz soit visible des joueurs ;
+- **contenus** : 15 quizz minutés rangés par matière (Culture générale, Code, Histoire, Mathématiques,
+  Physique-Chimie, SVT, Géographie, Gestion de projet) et un **assistant de révision** (RAG) qui
+  répond à partir de 9 fiches de cours, cite ses sources et refuse de souffler une question en cours.
+  Un test vérifie que la réponse des 102 questions d'exemple est bien dans une fiche.
+
+Une **v2.2** a ensuite ajouté : la reprise d'une partie après un redémarrage du serveur, la suppression
+d'un compte sans fausser les statistiques (anonymisation), la révision ciblée de ses erreurs, un fil
+de discussion **privé** par joueur pour l'assistant (une fuite entre comptes a été trouvée et
+corrigée), et l'IA gratuite **Groq** quand il n'y a pas de clé Claude. MyKwizz compte **58 tests
+automatiques**. Le détail et le backlog suivant sont dans `MyKwizz/docs/PROCHAINE-VERSION.md`.
 
 ### E.4 Documentation produite
 README (installation, utilisation, IA), glossaire, conception (MCD, MLD, architecture, formats, cas

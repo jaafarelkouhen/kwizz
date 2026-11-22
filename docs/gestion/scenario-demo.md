@@ -15,6 +15,10 @@ python outils/preparer_demo.py         # 3 quizz, 3 joueurs, des parties déjà 
 - ☐ Navigateur ouvert sur deux onglets : GitHub (dépôt) et Trello.
 - ☐ Police de la console agrandie (Ctrl + molette), écran en mode « dupliquer ».
 - ☐ Répétition chronométrée faite (carte T71).
+- ☐ **MyKwizz (bonus, 1 min)** : dans son dossier, `.env` avec `GROQ_API_KEY`, puis `python serveur.py --demo`
+  dans un 2e terminal ; un onglet sur http://127.0.0.1:8000 déjà connecté en `alice` / `demo`. Poser une
+  question à l'assistant 5 min avant, mais pas plus : le quota gratuit de Groq est d'environ 2 à 3 questions
+  par minute.
 
 ## Déroulé
 | Min. | Qui | Ce qu'on montre | Ce qu'on dit (idée clé) |
@@ -27,7 +31,8 @@ python outils/preparer_demo.py         # 3 quizz, 3 joueurs, des parties déjà 
 | 9:00 | Sami | GUI admin › 🤖 Générer un quizz « les volcans », 5 questions → relecture → enregistrer · en joueur : « Pourquoi ? » sur une erreur | IA optionnelle, relecture obligatoire, format JSON imposé (US16, US17) |
 | 11:00 | Akram | `.env` avec `KWIZZ_IA=non` → relancer : les boutons IA ont disparu, tout marche | mode hors-ligne (US19) ; la clé n'est jamais sur GitHub |
 | 12:00 | Jaafar | Trello (colonnes, cartes avec estimation) → GitHub (PR relues, tags `v1.0-mvp` et `v2.0-final`) → `docs/gestion/` (Gantt, PERT et chemin critique) | la gestion de projet en 3 preuves : planification, suivi, traçabilité |
-| 14:00 | Jaafar | `python -m pytest` → tous verts | qualité : tests à chaque PR ; questions ? |
+| 13:30 | Jaafar | `python -m pytest` → tous verts | qualité : tests à chaque PR |
+| 14:00 | Jaafar | **Bonus MyKwizz** dans le navigateur : accueil par matière → l'assistant répond à « c'est quoi la loi d'Ohm ? » avec sa fiche source → admin › tableau de bord (questions les plus ratées) | même paquet `quizz/`, nouvelle interface ; v2.1 « données fiables » demandée par le client (rapport E.3) ; questions ? |
 
 ## Plan B (pas d'Internet ou IA en panne)
 - Passer directement à la minute 11:00 : « voici ce qui se passe sans IA ». C'est une fonctionnalité,
@@ -44,3 +49,8 @@ python outils/preparer_demo.py         # 3 quizz, 3 joueurs, des parties déjà 
 | Comment avez-vous testé l'interface ? | Nour | saisies simulées, fenêtre cachée, fausse IA ; rapport D.6 |
 | Quel a été le chemin critique ? Avez-vous eu du retard ? | Jaafar | PERT : données → moteur → console → IA ; écarts dans les CR |
 | Comment avez-vous réparti le travail ? | Jaafar | un module par personne, Trello, commits par auteur |
+| MyKwizz : pourquoi un dépôt séparé ? | Jaafar | bonus demandé en cours de projet ; on ne touche pas à la version notée (gel) ; rapport E.3 |
+| Comment l'assistant évite-t-il d'inventer ? | Sami | il répond à partir de 9 fiches de cours, cite la fiche, marque « réponse hors fiches », retire les liens inventés ; un test vérifie que les 102 questions sont couvertes |
+| L'assistant peut-il donner les réponses d'un quizz ? | Sami | non : il refuse une question de la partie en cours, et « Pourquoi ? » n'est permis qu'après avoir joué |
+| Un joueur peut-il voir les questions d'un autre à l'assistant ? | Akram | non : chaque fil est rangé par compte en base ; une fuite a été trouvée en v2.2 et corrigée, avec un test |
+| Pourquoi Groq ? | Sami | gratuit, sans carte bancaire ; Claude reste prioritaire si sa clé est là ; sans clé, l'assistant répond avec les fiches |
