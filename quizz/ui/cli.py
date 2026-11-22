@@ -22,7 +22,7 @@ def demander_entier(message: str, mini: int, maxi: int) -> int:
         val = demander(message)
         if val.isdigit() and mini <= int(val) <= maxi:
             return int(val)
-        print(f"  Entrez un nombre entre {mini} et {maxi}.")
+        print(f"  Entre un nombre entre {mini} et {maxi}.")
 
 
 def demander_non_vide(message: str) -> str:
@@ -41,14 +41,14 @@ def demander_duree(message: str) -> int | None:
             return None
         if val.isdigit() and int(val) > 0:
             return int(val)
-        print("  Entrez un nombre de secondes positif, ou appuyez sur Entrée.")
+        print("  Entre un nombre de secondes positif, ou appuie sur Entrée.")
 
 
 def menu(titre: str, options: list[str]) -> int:
     print(f"\n=== {titre} ===")
     for i, opt in enumerate(options, 1):
         print(f"  {i}. {opt}")
-    return demander_entier("Votre choix : ", 1, len(options))
+    return demander_entier("Ton choix : ", 1, len(options))
 
 
 def pause():
@@ -72,7 +72,7 @@ def ecran_inscription(con) -> Utilisateur | None:
     print("  (login : 3 à 30 caractères · mot de passe : 8 caractères minimum, avec une lettre et un chiffre)")
     login = demander("Login : ")
     mdp = demander_mot_de_passe("Mot de passe : ")
-    if demander_mot_de_passe("Confirmez le mot de passe : ") != mdp:
+    if demander_mot_de_passe("Confirme le mot de passe : ") != mdp:
         print("Erreur : les deux mots de passe ne correspondent pas.")
         return None
     try:
@@ -86,10 +86,10 @@ def ecran_inscription(con) -> Utilisateur | None:
 
 def ecran_changer_mot_de_passe_obligatoire(con, user: Utilisateur):
     """Premier login de l'admin par défaut : on n'avance pas sans nouveau mot de passe (US15)."""
-    print("\n⚠ Vous utilisez le mot de passe administrateur par défaut. Choisissez-en un nouveau.")
+    print("\n⚠ Tu utilises le mot de passe administrateur par défaut. Choisis-en un nouveau.")
     while True:
         nouveau = demander_mot_de_passe("Nouveau mot de passe : ")
-        if demander_mot_de_passe("Confirmez le mot de passe : ") != nouveau:
+        if demander_mot_de_passe("Confirme le mot de passe : ") != nouveau:
             print("Erreur : les deux mots de passe ne correspondent pas.")
             continue
         try:
@@ -149,7 +149,7 @@ def ecran_jouer(con, user: Utilisateur):
         print(f"\nQ{num}. {q.enonce}" + (f"  ({int(restant)} s)" if restant is not None else ""))
         for i, c in enumerate(q.choix, 1):
             print(f"   {i}) {c.texte}")
-        n = demander_entier("Votre réponse : ", 1, len(q.choix))
+        n = demander_entier("Ta réponse : ", 1, len(q.choix))
         # input() ne peut pas être interrompu : on vérifie le temps après chaque réponse (US09)
         if qs.temps_ecoule(quizz, time.monotonic() - debut):
             print("⏰ Temps écoulé ! Cette réponse et les questions restantes comptent comme fausses.")
@@ -192,7 +192,7 @@ def afficher_correction(quizz: Quizz, reponses: dict[int, set[int]]):
 def ecran_historique(con, user: Utilisateur):
     tentatives = qs.historique(con, user.id_utilisateur)
     if not tentatives:
-        print("Vous n'avez encore passé aucun quizz.")
+        print("Tu n'as encore passé aucun quizz.")
     for t in tentatives:
         print(f"  {t.date_passage}  {t.titre_quizz:<30} {t.score}/{t.nb_questions}")
     pause()
@@ -209,7 +209,7 @@ def ecran_classement(con, user: Utilisateur):
     medailles = ["🥇", "🥈", "🥉"]
     for rang, (login, score) in enumerate(lignes, 1):
         icone = medailles[rang - 1] if rang <= 3 else f"{rang}."
-        moi = "  ← vous" if login == user.login else ""
+        moi = "  ← toi" if login == user.login else ""
         print(f"  {icone:<3} {login:<20} {score}/{len(quizz.questions)}{moi}")
     pause()
 
@@ -320,7 +320,7 @@ def ecran_supprimer(con, user: Utilisateur):
 
 
 def lire_texte_multiligne() -> str:
-    print("Collez le texte, puis tapez FIN seul sur une ligne :")
+    print("Colle le texte, puis tape FIN seul sur une ligne :")
     lignes = []
     while (ligne := input()).strip() != "FIN":
         lignes.append(ligne)
@@ -342,10 +342,10 @@ def ecran_generer_ia(con, user: Utilisateur):
         return
     quizz.id_createur = user.id_utilisateur
     afficher_recapitulatif(quizz)
-    print("\n⚠ Vérifiez les questions : une IA peut se tromper.")
+    print("\n⚠ Vérifie les questions : une IA peut se tromper.")
     quizz.duree_limite = demander_duree("Durée limite en secondes (Entrée = pas de minuterie) : ")
     if demander("Enregistrer ce quizz ? (o/n) ").lower() != "o":
-        print("Quizz non enregistré. Vous pouvez relancer une génération.")
+        print("Quizz non enregistré. Tu peux relancer une génération.")
         return
     qs.enregistrer_quizz(con, quizz)
     print(f"Quizz « {quizz.titre} » enregistré (🤖 généré par l'IA, modifiable dans « Modifier un quizz »).")

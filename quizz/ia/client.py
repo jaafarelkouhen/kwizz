@@ -77,25 +77,25 @@ def _appeler(systeme: str | list, prompt: str, max_tokens: int, effort: str, for
         )
     # du plus précis au plus général : chaque cas a un message utile pour l'utilisateur
     except anthropic.AuthenticationError:
-        raise ErreurIA("Clé API refusée : vérifiez ANTHROPIC_API_KEY dans le fichier .env.") from None
+        raise ErreurIA("Clé API refusée : vérifie ANTHROPIC_API_KEY dans le fichier .env.") from None
     except anthropic.PermissionDeniedError:
         raise ErreurIA("Cette clé API n'a pas accès à ce modèle (KWIZZ_MODELE).") from None
     except anthropic.RateLimitError:
-        raise ErreurIA("Trop de demandes envoyées à l'IA : réessayez dans une minute.") from None
+        raise ErreurIA("Trop de demandes envoyées à l'IA : réessaie dans une minute.") from None
     except anthropic.APITimeoutError:
-        raise ErreurIA("L'IA met trop de temps à répondre : réessayez.") from None
+        raise ErreurIA("L'IA met trop de temps à répondre : réessaie.") from None
     except anthropic.APIConnectionError:
-        raise ErreurIA("Impossible de joindre l'IA : vérifiez la connexion Internet.") from None
+        raise ErreurIA("Impossible de joindre l'IA : vérifie la connexion Internet.") from None
     except anthropic.APIStatusError as e:
-        raise ErreurIA(f"Le service IA a renvoyé une erreur ({e.status_code}) : réessayez plus tard.") from None
+        raise ErreurIA(f"Le service IA a renvoyé une erreur ({e.status_code}) : réessaie plus tard.") from None
 
     if reponse.stop_reason == "refusal":
-        raise ErreurIA("L'IA a refusé cette demande. Reformulez le thème ou le texte.")
+        raise ErreurIA("L'IA a refusé cette demande. Reformule le thème ou le texte.")
     if reponse.stop_reason == "max_tokens":
-        raise ErreurIA("La réponse de l'IA était trop longue : demandez moins de questions.")
+        raise ErreurIA("La réponse de l'IA était trop longue : demande moins de questions.")
     texte = "".join(b.text for b in reponse.content if b.type == "text").strip()
     if not texte:
-        raise ErreurIA("L'IA n'a rien répondu : réessayez.")
+        raise ErreurIA("L'IA n'a rien répondu : réessaie.")
     return texte
 
 
@@ -115,26 +115,26 @@ def _appeler_groq(systeme: str | list, messages: list[dict], max_tokens: int, fo
         with urllib.request.urlopen(requete, timeout=DELAI_MAX) as r:
             donnees = json.load(r)
     except urllib.error.HTTPError as e:
-        messages_erreur = {401: "Clé Groq refusée : vérifiez GROQ_API_KEY dans le fichier .env.",
-                           404: "Modèle Groq inconnu : vérifiez KWIZZ_GROQ_MODELE.",
-                           429: "Quota gratuit de Groq atteint : réessayez dans une minute."}
+        messages_erreur = {401: "Clé Groq refusée : vérifie GROQ_API_KEY dans le fichier .env.",
+                           404: "Modèle Groq inconnu : vérifie KWIZZ_GROQ_MODELE.",
+                           429: "Quota gratuit de Groq atteint : réessaie dans une minute."}
         raise ErreurIA(messages_erreur.get(e.code, f"Le service Groq a renvoyé une erreur ({e.code}) : "
-                                                    "réessayez plus tard.")) from None
+                                                    "réessaie plus tard.")) from None
     except TimeoutError:
-        raise ErreurIA("L'IA met trop de temps à répondre : réessayez.") from None
+        raise ErreurIA("L'IA met trop de temps à répondre : réessaie.") from None
     except urllib.error.URLError:
-        raise ErreurIA("Impossible de joindre l'IA : vérifiez la connexion Internet.") from None
+        raise ErreurIA("Impossible de joindre l'IA : vérifie la connexion Internet.") from None
     except json.JSONDecodeError:
-        raise ErreurIA("Réponse illisible du service Groq : réessayez.") from None
+        raise ErreurIA("Réponse illisible du service Groq : réessaie.") from None
     try:
         choix = donnees["choices"][0]
         texte = (choix["message"].get("content") or "").strip()
     except (KeyError, IndexError, TypeError, AttributeError):
-        raise ErreurIA("Réponse inattendue du service Groq : réessayez.") from None
+        raise ErreurIA("Réponse inattendue du service Groq : réessaie.") from None
     if choix.get("finish_reason") == "length":
-        raise ErreurIA("La réponse de l'IA était trop longue : demandez moins de questions.")
+        raise ErreurIA("La réponse de l'IA était trop longue : demande moins de questions.")
     if not texte:
-        raise ErreurIA("L'IA n'a rien répondu : réessayez.")
+        raise ErreurIA("L'IA n'a rien répondu : réessaie.")
     return texte
 
 
@@ -156,4 +156,4 @@ def demander_json(systeme: str, prompt: str, schema: dict, max_tokens: int = 160
     try:
         return json.loads(texte)
     except json.JSONDecodeError:
-        raise ErreurIA("La réponse de l'IA est illisible (JSON invalide) : réessayez.") from None
+        raise ErreurIA("La réponse de l'IA est illisible (JSON invalide) : réessaie.") from None

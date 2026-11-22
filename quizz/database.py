@@ -88,7 +88,7 @@ def migrer(con: sqlite3.Connection) -> None:
     actuelle = con.execute("PRAGMA user_version").fetchone()[0]
     if actuelle > derniere:
         raise RuntimeError(f"Base créée par une version plus récente de Kwizz (schéma {actuelle}, "
-                           f"cette version connaît {derniere}) : mettez l'application à jour.")
+                           f"cette version connaît {derniere}) : mets l'application à jour.")
     if actuelle == derniere:
         return  # cas de chaque requête du serveur web : ni verrou ni écriture
     for numero in range(actuelle + 1, derniere + 1):
