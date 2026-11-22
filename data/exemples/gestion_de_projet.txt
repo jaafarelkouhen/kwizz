@@ -1,4 +1,5 @@
 # TITRE: Gestion de projet
+# THEME: Gestion de projet
 # DESCRIPTION: SCRUM, planification et outils vus en PROJ531
 # DUREE: 120
 # Quizz d'exemple écrit par Sami LAARFI — une seule bonne réponse (+) par question

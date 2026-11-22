@@ -1,0 +1,52 @@
+# TITRE: Culture générale
+# THEME: Culture générale
+# DESCRIPTION: Arts, littérature, sciences et monde : un tour d'horizon
+# DUREE: 120
+
+Q: Qui a peint « La Joconde » ?
+- Michel-Ange
++ Léonard de Vinci
+- Raphaël
+- Botticelli
+
+Q: Qui a écrit « Les Misérables » ?
+- Émile Zola
+- Gustave Flaubert
++ Victor Hugo
+- Alexandre Dumas
+
+Q: Quel est le plus long fleuve de France ?
+- Le Rhône
++ La Loire
+- La Seine
+- La Garonne
+
+Q: Combien de joueurs une équipe de football aligne-t-elle sur le terrain ?
+- 9
+- 10
++ 11
+- 12
+
+Q: Quelle langue est la plus parlée au monde comme langue maternelle ?
+- L'anglais
+- L'espagnol
++ Le chinois mandarin
+- L'hindi
+
+Q: Quel compositeur est devenu sourd mais a continué à composer, dont la 9e symphonie ?
++ Ludwig van Beethoven
+- Wolfgang Amadeus Mozart
+- Frédéric Chopin
+- Jean-Sébastien Bach
+
+Q: Dans quelle ville se trouve le musée du Prado ?
+- Lisbonne
+- Barcelone
++ Madrid
+- Rome
+
+Q: Quel océan est le plus grand ?
+- L'océan Atlantique
+- L'océan Indien
++ L'océan Pacifique
+- L'océan Arctique

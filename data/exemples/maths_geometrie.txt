@@ -1,0 +1,46 @@
+# TITRE: Géométrie et fonctions
+# THEME: Mathématiques
+# DESCRIPTION: Aires, angles, Pythagore et dérivées
+# DUREE: 150
+
+Q: Quelle est la somme des angles d'un triangle ?
+- 90°
++ 180°
+- 270°
+- 360°
+
+Q: Un triangle rectangle a des côtés de 3 et 4 autour de l'angle droit. Que mesure l'hypoténuse ?
+- 6
++ 5
+- 7
+- 25
+
+Q: Quelle est l'aire d'un disque de rayon r ?
+- 2πr
++ πr²
+- πr
+- 2πr²
+
+Q: Quelle est la dérivée de f(x) = x² ?
+- x
++ 2x
+- x²/2
+- 2
+
+Q: Quelle est la dérivée de f(x) = sin(x) ?
++ cos(x)
+- −cos(x)
+- −sin(x)
+- tan(x)
+
+Q: Combien de côtés possède un hexagone ?
+- 5
++ 6
+- 7
+- 8
+
+Q: Quelle est la valeur approchée de π ?
+- 3,04
++ 3,14
+- 3,41
+- 2,72

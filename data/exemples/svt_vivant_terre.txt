@@ -1,0 +1,46 @@
+# TITRE: Le vivant et la Terre
+# THEME: SVT
+# DESCRIPTION: Photosynthèse, évolution, écologie et géologie
+# DUREE: 120
+
+Q: Quel gaz les plantes absorbent-elles pour réaliser la photosynthèse ?
+- Le dioxygène
++ Le dioxyde de carbone
+- L'azote
+- L'hélium
+
+Q: Dans quel organite se déroule la photosynthèse ?
+- La mitochondrie
++ Le chloroplaste
+- Le noyau
+- Le ribosome
+
+Q: Qui a proposé la théorie de l'évolution par sélection naturelle ?
+- Gregor Mendel
+- Louis Pasteur
++ Charles Darwin
+- Jean-Baptiste Lamarck
+
+Q: Quelle est la couche la plus externe de la Terre ?
++ La croûte
+- Le manteau
+- Le noyau externe
+- Le noyau interne
+
+Q: Dans une chaîne alimentaire, comment appelle-t-on les végétaux chlorophylliens ?
++ Des producteurs
+- Des consommateurs primaires
+- Des décomposeurs
+- Des prédateurs
+
+Q: Quel organite produit l'essentiel de l'énergie (ATP) de la cellule par la respiration ?
+- Le chloroplaste
++ La mitochondrie
+- L'appareil de Golgi
+- Le lysosome
+
+Q: Quel scientifique est considéré comme le père de la génétique, grâce à ses petits pois ?
++ Gregor Mendel
+- Charles Darwin
+- Louis Pasteur
+- Claude Bernard

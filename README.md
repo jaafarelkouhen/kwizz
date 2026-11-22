@@ -4,7 +4,7 @@
 
 # Kwizz — PROJ531 Gestion de projet informatique
 
-**Kwizz** est une application Python de quizz, en console et en interface graphique :
+**Kwizz** est une application Python de quizz, en console, en interface graphique et **dans le navigateur** :
 - un **administrateur** crée des quizz (à la main, depuis un fichier texte ou JSON, ou avec l'IA) ;
 - les **joueurs inscrits** y répondent, avec une minuterie et un ordre aléatoire possibles ;
 - chacun voit son **score**, les **bonnes réponses**, son **historique** et le **classement** de chaque
@@ -27,6 +27,7 @@ pip install -r requirements.txt
 ```bash
 python main.py          # interface console
 python main.py --gui    # interface graphique (Tkinter)
+python serveur.py       # version web : http://127.0.0.1:8000 (plusieurs joueurs en même temps)
 python -m pytest        # lancer les tests automatiques
 ```
 
@@ -42,6 +43,31 @@ créée automatiquement et ignorée par Git.
 
 La création et la modification de quizz « à la main » se font dans la **console**. L'interface
 graphique propose le jeu, l'import, l'export, la suppression et la génération par IA.
+
+## Version web (bonus demandé par le client)
+
+`python serveur.py` ouvre Kwizz dans le navigateur, sur **la même base et les mêmes règles** que la console
+et l'interface graphique : une partie jouée dans l'une apparaît dans l'autre. Seule la bibliothèque
+standard de Python est utilisée (`http.server`), rien à installer en plus.
+
+| Option | Effet |
+|---|---|
+| `--demo` | ajoute les joueurs `alice`, `bob`, `chloe` (mot de passe `demo`) et quelques parties |
+| `--port 8080` | change le port (défaut 8000) |
+| `--base autre.db` | utilise un autre fichier SQLite |
+| `--sans-navigateur` | n'ouvre pas le navigateur |
+
+Ce que la version web ajoute :
+- **plusieurs joueurs en même temps** : sessions gardées en base (empreinte du jeton seulement), cookie
+  `HttpOnly; SameSite=Strict`, blocage après 3 essais ratés, qui survivent à un redémarrage ;
+- **assistant de révision** : il répond à partir de 9 fiches de cours (`quizz/rag/docs/`), cite ses sources,
+  refuse de souffler une question en cours ; chaque joueur a son propre fil de discussion ;
+- **espace admin** : tableau de bord, gestion des comptes, journal d'activité, historique de chaque joueur,
+  cycle brouillon → tester → valider ; **espace joueur** : statistiques par thème, mot de passe ;
+- **revoir** le corrigé d'une ancienne partie, **réviser ses erreurs**, **reprendre** une partie après un
+  redémarrage ; 15 quizz d'exemple rangés par matière.
+
+Premier lancement sur une base neuve : `admin` / `admin`, puis changement de mot de passe obligatoire.
 
 ## Assistant IA (optionnel)
 
@@ -88,14 +114,19 @@ Q: Quelle est la capitale de l'Italie ?
 
 ```
 main.py                   point d'entrée (console ou --gui)
+serveur.py                version web : traduit les requêtes HTTP en appels au paquet quizz/
+web/                      pages de la version web (HTML, CSS, JavaScript), sans règle métier
 quizz/
   models.py               objets métier (Utilisateur, Quizz, Question, Choix, Tentative)
-  database.py             connexion SQLite, schéma, migration automatique
+  database.py             connexion SQLite, schéma, migrations numérotées (1 à 9)
   auth.py                 comptes, hachage des mots de passe, mot de passe admin
   quiz_service.py         créer, modifier, jouer, corriger, historique, classement, minuterie, ordre aléatoire
   importer.py             import texte / JSON, export JSON
   config.py               lecture de .env (IA)
-  ia/                     assistant IA optionnel : client, générateur, explications, recommandation
+  ia/                     assistant IA optionnel : client (Claude ou Groq), générateur, explications, recommandation
+  journal.py              journal d'activité (version web)
+  parties.py              parties en cours gardées en base (version web)
+  rag/                    assistant de révision : fiches de cours, recherche, garde-fous (version web)
   ui/cli.py               interface console
   ui/gui.py               interface graphique Tkinter
 tests/                    tests pytest (dont un scénario complet de démo)
@@ -103,7 +134,7 @@ data/exemples/            quizz d'exemple
 docs/                     gestion de projet, conception, comptes-rendus, rapport
 ```
 
-Règles d'architecture : `ui/` n'écrit jamais de SQL ; `auth`, `quiz_service`, `importer` et `ia/` ne
+Règles d'architecture : `ui/` et `web/` n'écrivent jamais de SQL ; `auth`, `quiz_service`, `importer` et `ia/` ne
 font jamais de `print()` ni d'`input()` ([architecture](docs/conception/architecture.md)).
 
 ## Avancement

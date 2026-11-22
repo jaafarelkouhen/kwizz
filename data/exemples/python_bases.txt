@@ -1,5 +1,7 @@
 # TITRE: Les bases de Python
+# THEME: Code
 # DESCRIPTION: Types, listes et fonctions
+# DUREE: 90
 
 Q: Quel est le type de l'expression 3 / 2 ?
 - int

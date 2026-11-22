@@ -1,0 +1,46 @@
+# TITRE: Livres, cinéma et musique
+# THEME: Culture générale
+# DESCRIPTION: Œuvres et auteurs incontournables
+# DUREE: 100
+
+Q: Qui est l'auteur du « Petit Prince » ?
+- Jules Verne
++ Antoine de Saint-Exupéry
+- Albert Camus
+- Marcel Pagnol
+
+Q: Qui a écrit « L'Étranger » (1942) ?
++ Albert Camus
+- Jean-Paul Sartre
+- André Malraux
+- Boris Vian
+
+Q: Quel réalisateur a tourné « Le Fabuleux Destin d'Amélie Poulain » ?
+- Luc Besson
+- François Truffaut
++ Jean-Pierre Jeunet
+- Jacques Audiard
+
+Q: Combien de touches compte un piano standard ?
+- 76
++ 88
+- 96
+- 102
+
+Q: Quel écrivain a créé le détective Sherlock Holmes ?
+- Agatha Christie
++ Arthur Conan Doyle
+- Edgar Allan Poe
+- Georges Simenon
+
+Q: « Roméo et Juliette » est une pièce de…
+- Molière
+- Racine
++ William Shakespeare
+- Corneille
+
+Q: Quelle ville accueille chaque année le festival de cinéma dont le prix est la Palme d'or ?
+- Venise
+- Berlin
++ Cannes
+- Deauville
