@@ -128,7 +128,7 @@ class EcranConnexion(Ecran):
             self.erreur(str(e))
             return
         if auth.utilise_mot_de_passe_par_defaut(self.con, user) and not self.changer_mot_de_passe(user):
-            self.erreur("Vous devez choisir un nouveau mot de passe administrateur pour continuer.")
+            self.erreur("Tu dois choisir un nouveau mot de passe administrateur pour continuer.")
             return
         self.app.user = user
         self.app.afficher(EcranListe)
@@ -137,11 +137,11 @@ class EcranConnexion(Ecran):
         """US15 : renvoie False si l'admin annule."""
         while True:
             nouveau = simpledialog.askstring("Mot de passe par défaut",
-                                             "Choisissez un nouveau mot de passe administrateur :",
+                                             "Choisis un nouveau mot de passe administrateur :",
                                              show="•", parent=self)
             if nouveau is None:
                 return False
-            if simpledialog.askstring("Confirmation", "Confirmez le mot de passe :", show="•", parent=self) != nouveau:
+            if simpledialog.askstring("Confirmation", "Confirme le mot de passe :", show="•", parent=self) != nouveau:
                 messagebox.showerror("Kwizz", "Les deux mots de passe ne correspondent pas.", parent=self)
                 continue
             try:
@@ -152,7 +152,7 @@ class EcranConnexion(Ecran):
 
     def inscrire(self):
         login, mdp = self.login.get().strip(), self.mdp.get()
-        confirmation = simpledialog.askstring("Créer un compte", "Confirmez le mot de passe :", show="•", parent=self)
+        confirmation = simpledialog.askstring("Créer un compte", "Confirme le mot de passe :", show="•", parent=self)
         if confirmation is None:
             return
         if confirmation != mdp:
@@ -220,14 +220,14 @@ class EcranListe(Ecran):
             description = f" — {q.description}" if q.description else ""
             self.liste.insert("end", f"{q.titre}{minuterie}{description}")
         if not self.quizz:
-            self.info("Aucun quizz pour l'instant." + (" Importez-en un !" if self.app.user.est_admin else ""))
+            self.info("Aucun quizz pour l'instant." + (" Importes-en un !" if self.app.user.est_admin else ""))
         r = recommandation.recommander(self.con, self.app.user.id_utilisateur)
         self.recommandation.config(text=f"💡 Recommandé : « {r.quizz.titre} » ({r.raison})" if r else "")
 
     def selection(self) -> Quizz | None:
         choix = self.liste.curselection()
         if not choix:
-            self.erreur("Sélectionnez d'abord un quizz dans la liste.")
+            self.erreur("Sélectionne d'abord un quizz dans la liste.")
             return None
         return self.quizz[choix[0]]
 
@@ -344,7 +344,7 @@ class EcranJeu(Ecran):
             return
         n = self.choix_var.get()
         if n < 0:
-            self.erreur("Choisissez une réponse.")
+            self.erreur("Choisis une réponse.")
             return
         q = self.quizz.questions[self.index]
         self.reponses[q.id_question] = {q.choix[n].id_choix}
@@ -465,7 +465,7 @@ class EcranHistorique(EcranTableau):
         lignes = [(t.date_passage, t.titre_quizz, f"{t.score} / {t.nb_questions}")
                   for t in qs.historique(app.con, app.user.id_utilisateur)]
         super().__init__(app, "Mon historique", [("Date", 170), ("Quizz", 300), ("Score", 90)],
-                         lignes, "Vous n'avez encore passé aucun quizz.")
+                         lignes, "Tu n'as encore passé aucun quizz.")
 
 
 class EcranClassement(EcranTableau):
@@ -536,7 +536,7 @@ class FenetreGenerationIA(tk.Toplevel):
             if erreur:
                 self.message.config(text=str(erreur), fg=ROUGE)
             else:
-                self.message.config(text="Relisez l'aperçu, puis enregistrez ou relancez une génération.", fg=VERT)
+                self.message.config(text="Relis l'aperçu, puis enregistre ou relance une génération.", fg=VERT)
             self.afficher_apercu()
 
         executer_en_fond(self, lambda: generateur.generer_quizz(sujet, nb, depuis_texte), fini)

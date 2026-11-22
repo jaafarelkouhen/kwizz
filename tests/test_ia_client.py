@@ -103,7 +103,7 @@ def reponse(code):
     (anthropic.APIConnectionError(request=requete()), "connexion Internet"),
     (anthropic.APITimeoutError(request=requete()), "trop de temps"),
     (anthropic.AuthenticationError("x", response=reponse(401), body=None), "Clé API refusée"),
-    (anthropic.RateLimitError("x", response=reponse(429), body=None), "réessayez dans une minute"),
+    (anthropic.RateLimitError("x", response=reponse(429), body=None), "réessaie dans une minute"),
     (anthropic.InternalServerError("x", response=reponse(500), body=None), "erreur \\(500\\)"),
 ])
 def test_erreurs_de_l_api_traduites(monkeypatch, ia_active, erreur, message):

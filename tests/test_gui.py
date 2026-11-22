@@ -70,7 +70,7 @@ def test_partie_complete(app):
     jeu = app.ecran
     assert isinstance(jeu, gui.EcranJeu)
     jeu.valider()                                    # sans choix : refusé
-    assert "Choisissez" in jeu.message.cget("text")
+    assert "Choisis" in jeu.message.cget("text")
     jeu.choix_var.set(1); jeu.valider()             # Rome ✔
     jeu.choix_var.set(1); jeu.valider()             # Porto ✘
 
@@ -112,4 +112,4 @@ def test_selection_obligatoire_avant_de_jouer(app):
     app.user = auth.inscrire(app.con, "bob", "motdepasse1")
     liste = app.afficher(gui.EcranListe)
     liste.jouer()
-    assert "Sélectionnez" in liste.message.cget("text")
+    assert "Sélectionne" in liste.message.cget("text")

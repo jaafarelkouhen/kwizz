@@ -56,9 +56,9 @@ def generer_quizz(sujet: str, nb_questions: int = 5, depuis_texte: bool = False)
     """Renvoie un quizz validé (source = « ia »), non enregistré. Lève ErreurIA en cas de problème."""
     sujet = sujet.strip()
     if not sujet:
-        raise ErreurIA("Indiquez un thème ou collez un texte.")
+        raise ErreurIA("Indique un thème ou colle un texte.")
     if len(sujet) > TEXTE_MAX:
-        raise ErreurIA(f"Texte trop long ({len(sujet)} caractères, maximum {TEXTE_MAX}) : raccourcissez-le.")
+        raise ErreurIA(f"Texte trop long ({len(sujet)} caractères, maximum {TEXTE_MAX}) : raccourcis-le.")
     if not 1 <= nb_questions <= NB_QUESTIONS_MAX:
         raise ErreurIA(f"Nombre de questions : entre 1 et {NB_QUESTIONS_MAX}.")
 
@@ -73,9 +73,9 @@ def generer_quizz(sujet: str, nb_questions: int = 5, depuis_texte: bool = False)
                                             "duree_limite": None, **donnees})
         qs.valider(quizz)
     except (importer.ErreurFormat, qs.ErreurQuizz) as e:
-        raise ErreurIA(f"Le quizz proposé par l'IA est incomplet ({e}) : réessayez.") from None
+        raise ErreurIA(f"Le quizz proposé par l'IA est incomplet ({e}) : réessaie.") from None
     for num, q in enumerate(quizz.questions, 1):
         if len(q.bonnes_reponses()) != 1:
-            raise ErreurIA(f"Question {num} : l'IA a donné plusieurs bonnes réponses : réessayez.")
+            raise ErreurIA(f"Question {num} : l'IA a donné plusieurs bonnes réponses : réessaie.")
     quizz.source = "ia"
     return quizz

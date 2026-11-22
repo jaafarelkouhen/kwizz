@@ -224,9 +224,9 @@ class Gestionnaire(BaseHTTPRequestHandler):
 
         def exiger_joueur():
             if s is None:
-                raise ErreurHTTP(401, "Connectez-vous d'abord.")
+                raise ErreurHTTP(401, "Connecte-toi d'abord.")
             if s.get("doit_changer"):
-                raise ErreurHTTP(403, "Choisissez d'abord un nouveau mot de passe.")
+                raise ErreurHTTP(403, "Choisis d'abord un nouveau mot de passe.")
             return s
 
         def exiger_admin():
@@ -259,7 +259,7 @@ class Gestionnaire(BaseHTTPRequestHandler):
                 "SELECT instant FROM echec_connexion WHERE login = ? ORDER BY instant", (login,))]
             if len(recents) >= ESSAIS_MAX:
                 attente = int(BLOCAGE_SECONDES - (maintenant - recents[0])) + 1
-                raise ErreurHTTP(429, f"Trois essais ratés : réessayez dans {attente} s.")
+                raise ErreurHTTP(429, f"Trois essais ratés : réessaie dans {attente} s.")
             try:
                 u = auth.connecter(con, login, str(d.get("mdp", "")))
             except auth.ErreurAuth:
@@ -273,7 +273,7 @@ class Gestionnaire(BaseHTTPRequestHandler):
                                   f"adresse {self.client_address[0]}")
                 msg = "Login ou mot de passe incorrect."
                 msg += f" Encore {restants} essai{'s' if restants > 1 else ''}." if restants > 0 else \
-                    f" Réessayez dans {BLOCAGE_SECONDES} s."
+                    f" Réessaie dans {BLOCAGE_SECONDES} s."
                 raise ErreurHTTP(401, msg)
             with con:
                 con.execute("DELETE FROM echec_connexion WHERE login = ?", (login,))
@@ -290,7 +290,7 @@ class Gestionnaire(BaseHTTPRequestHandler):
 
         if (verbe, route) == ("POST", "mot-de-passe"):
             if s is None:
-                raise ErreurHTTP(401, "Connectez-vous d'abord.")
+                raise ErreurHTTP(401, "Connecte-toi d'abord.")
             d = self._corps()
             if d.get("nouveau") != d.get("confirmation"):
                 raise ErreurHTTP(400, "Les deux mots de passe ne sont pas identiques.")
@@ -327,7 +327,7 @@ class Gestionnaire(BaseHTTPRequestHandler):
             except (TypeError, ValueError, AttributeError):
                 raise ErreurHTTP(400, "Réponses mal formées.")
             if not parties.sauver_reponses(con, s["id"], str(d.get("partie")), reponses):
-                raise ErreurHTTP(409, "Cette partie n'existe plus : relancez le quizz.")
+                raise ErreurHTTP(409, "Cette partie n'existe plus : relance le quizz.")
             return self._json({"ok": True})
 
         # ------------------------------------------------ révision ciblée (v2.2, W4)
@@ -375,7 +375,7 @@ class Gestionnaire(BaseHTTPRequestHandler):
             d = self._corps()
             partie = parties.terminer(con, s["id"], str(d.get("partie")))
             if partie is None or partie["id_quizz"] != ids[0]:
-                raise ErreurHTTP(409, "Cette partie n'existe plus : relancez le quizz.")
+                raise ErreurHTTP(409, "Cette partie n'existe plus : relance le quizz.")
             quizz = qs.charger_quizz(con, ids[0])
             ecoule = time.time() - partie["debut"]
             depasse = qs.temps_ecoule(quizz, ecoule - 2)  # 2 s de tolérance pour le réseau

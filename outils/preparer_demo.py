@@ -51,7 +51,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.base.exists():
         if not args.ecraser:
-            print(f"{args.base} existe déjà. Relancez avec --ecraser (une sauvegarde .bak sera faite).")
+            print(f"{args.base} existe déjà. Relance avec --ecraser (une sauvegarde .bak sera faite).")
             return 1
         shutil.copy2(args.base, args.base.with_suffix(".db.bak"))
         args.base.unlink()
