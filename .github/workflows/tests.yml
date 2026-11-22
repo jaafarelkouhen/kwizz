@@ -1,0 +1,23 @@
+# Lance les tests à chaque Pull Request et à chaque push sur main : une PR rouge ne se fusionne pas.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    # Windows : comme les postes de l'équipe, et Tkinter y marche sans écran virtuel (tests de l'interface graphique)
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]   # 3.10 = version minimale annoncée dans le README
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m pytest tests -q
