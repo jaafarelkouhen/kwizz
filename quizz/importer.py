@@ -32,6 +32,8 @@ def lire_quizz_texte(chemin: str | Path) -> Quizz:
                     quizz.titre = valeur
                 elif cle == "DESCRIPTION":
                     quizz.description = valeur
+                elif cle == "THEME":
+                    quizz.theme = valeur or "Divers"
                 elif cle == "DUREE":
                     if not valeur.isdigit():
                         raise ErreurFormat(f"Ligne {num} : DUREE doit être un nombre de secondes.")
@@ -62,8 +64,10 @@ def quizz_vers_dict(quizz: Quizz) -> dict:
         "titre": quizz.titre,
         "description": quizz.description,
         "duree_limite": quizz.duree_limite,
+        "theme": quizz.theme,
         "questions": [
-            {"enonce": q.enonce, "choix": [{"texte": c.texte, "correct": c.est_correct} for c in q.choix]}
+            {"enonce": q.enonce, "choix": [{"texte": c.texte, "correct": c.est_correct} for c in q.choix],
+             **({"explication": q.explication} if q.explication else {})}
             for q in quizz.questions
         ],
     }
@@ -80,8 +84,9 @@ def quizz_depuis_dict(donnees: dict) -> Quizz:
         if duree is not None and (not isinstance(duree, int) or duree <= 0):
             raise ErreurFormat("\"duree_limite\" doit être un entier positif ou null.")
         quizz = Quizz(str(donnees["titre"]).strip(), str(donnees.get("description") or ""), duree)
+        quizz.theme = str(donnees.get("theme") or "Divers").strip()
         for num, q in enumerate(donnees["questions"], 1):
-            question = Question(str(q["enonce"]).strip())
+            question = Question(str(q["enonce"]).strip(), explication=str(q.get("explication") or "").strip())
             for c in q["choix"]:
                 question.choix.append(Choix(str(c["texte"]).strip(), c.get("correct") is True))
             quizz.questions.append(question)

@@ -69,7 +69,7 @@ ESSAIS_CONNEXION = 3
 def ecran_inscription(con) -> Utilisateur | None:
     """Crée un compte puis connecte directement le nouvel utilisateur."""
     print("\n--- Créer un compte ---")
-    print("  (login : 3 caractères minimum · mot de passe : 4 caractères minimum)")
+    print("  (login : 3 à 30 caractères · mot de passe : 8 caractères minimum, avec une lettre et un chiffre)")
     login = demander("Login : ")
     mdp = demander_mot_de_passe("Mot de passe : ")
     if demander_mot_de_passe("Confirmez le mot de passe : ") != mdp:
@@ -165,17 +165,17 @@ def ecran_jouer(con, user: Utilisateur):
     erreurs = [q for q in quizz.questions if not qs.est_juste(q, reponses.get(q.id_question, set()))]
     if erreurs and client_ia.ia_disponible() and \
             demander("\nExpliquer mes erreurs avec l'IA ? (o/n) ").lower() == "o":
-        expliquer_erreurs(quizz, erreurs, reponses)
+        expliquer_erreurs(con, quizz, erreurs)
     pause()
 
 
-def expliquer_erreurs(quizz: Quizz, erreurs: list[Question], reponses: dict[int, set[int]]):
+def expliquer_erreurs(con, quizz: Quizz, erreurs: list[Question]):
     """US17 : une explication par question ratée ; on s'arrête à la première panne de l'IA."""
     for q in erreurs:
         num = quizz.questions.index(q) + 1
         print(f"\n💬 Q{num}. {q.enonce}")
         try:
-            print(f"   {explications.expliquer(q, reponses.get(q.id_question, set()))}")
+            print(f"   {explications.expliquer(con, q)}")
         except client_ia.ErreurIA as e:
             print(f"   Explication indisponible : {e}")
             return
@@ -314,8 +314,9 @@ def ecran_modifier(con, user: Utilisateur):
 def ecran_supprimer(con, user: Utilisateur):
     quizz = choisir_quizz(con)
     if quizz and demander(f"Supprimer « {quizz.titre} » ? (o/n) ").lower() == "o":
-        qs.supprimer_quizz(con, quizz.id_quizz)
-        print("Quizz supprimé.")
+        gardees = qs.supprimer_quizz(con, quizz.id_quizz)
+        print(f"Quizz archivé : l'historique des joueurs est gardé ({gardees} partie(s))." if gardees
+              else "Quizz supprimé.")
 
 
 def lire_texte_multiligne() -> str:

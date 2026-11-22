@@ -11,31 +11,31 @@ def simuler_saisies(monkeypatch, *saisies):
 
 
 def test_inscription_connecte_directement(con, monkeypatch):
-    simuler_saisies(monkeypatch, "alice", "secret", "secret")
+    simuler_saisies(monkeypatch, "alice", "secret123", "secret123")
     user = cli.ecran_inscription(con)
     assert user is not None and user.login == "alice"
 
 
 def test_inscription_confirmation_differente(con, monkeypatch, capsys):
-    simuler_saisies(monkeypatch, "alice", "secret", "autre")
+    simuler_saisies(monkeypatch, "alice", "secret123", "autre")
     assert cli.ecran_inscription(con) is None
     assert "ne correspondent pas" in capsys.readouterr().out
 
 
 def test_inscription_login_trop_court(con, monkeypatch, capsys):
-    simuler_saisies(monkeypatch, "al", "secret", "secret")
+    simuler_saisies(monkeypatch, "al", "secret123", "secret123")
     assert cli.ecran_inscription(con) is None
-    assert "3 caractères" in capsys.readouterr().out
+    assert "3 à 30 caractères" in capsys.readouterr().out
 
 
 def test_connexion_reussie_au_deuxieme_essai(con, monkeypatch):
-    auth.inscrire(con, "bob", "1234")
-    simuler_saisies(monkeypatch, "bob", "faux", "bob", "1234")
+    auth.inscrire(con, "bob", "motdepasse1")
+    simuler_saisies(monkeypatch, "bob", "faux", "bob", "motdepasse1")
     assert cli.ecran_connexion(con).login == "bob"
 
 
 def test_connexion_bloquee_apres_trois_essais(con, monkeypatch, capsys):
-    auth.inscrire(con, "bob", "1234")
+    auth.inscrire(con, "bob", "motdepasse1")
     simuler_saisies(monkeypatch, *["bob", "faux"] * cli.ESSAIS_CONNEXION)
     assert cli.ecran_connexion(con) is None
     assert "Trop d'essais" in capsys.readouterr().out
@@ -45,8 +45,8 @@ def test_premiere_connexion_admin_force_le_changement(con, monkeypatch, capsys):
     auth.creer_admin_par_defaut(con)
     simuler_saisies(monkeypatch, "admin", "admin",          # connexion
                     "abc", "abc",                            # trop court → refusé
-                    "solide1", "solide2",                    # confirmation différente → refusé
-                    "solide1", "solide1")                    # accepté
+                    "solide12", "solide23",                  # confirmation différente → refusé
+                    "solide12", "solide12")                  # accepté
     assert cli.ecran_connexion(con).est_admin
-    assert auth.connecter(con, "admin", "solide1")
+    assert auth.connecter(con, "admin", "solide12")
     assert "mot de passe administrateur par défaut" in capsys.readouterr().out

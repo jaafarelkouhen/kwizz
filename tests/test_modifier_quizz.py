@@ -26,7 +26,7 @@ def test_modifier_titre_duree_et_questions(con):
 
 
 def test_modifier_garde_les_scores_de_l_historique(con):
-    u = auth.inscrire(con, "bob", "1234")
+    u = auth.inscrire(con, "bob", "motdepasse1")
     q = quizz_enregistre(con)
     qs.enregistrer_tentative(con, u.id_utilisateur, q, {})
     q.titre = "Maths (corrigé)"

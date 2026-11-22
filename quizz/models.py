@@ -24,6 +24,7 @@ class Question:
     choix: list[Choix] = field(default_factory=list)
     ordre: int = 0
     id_question: Optional[int] = None
+    explication: str = ""  # gardée après le 1er « Pourquoi ? » (v2.1, V6)
 
     def bonnes_reponses(self) -> list[Choix]:
         return [c for c in self.choix if c.est_correct]
@@ -38,6 +39,11 @@ class Quizz:
     id_quizz: Optional[int] = None
     id_createur: Optional[int] = None
     source: str = "manuel"  # manuel | fichier | ia
+    theme: str = "Divers"  # Culture, Code, Histoire, Maths, Physique-Chimie, SVT…
+    statut: str = "publie"  # brouillon (visible des admins seulement) | publie
+    teste_le: Optional[str] = None
+    valide_le: Optional[str] = None
+    archive: bool = False  # supprimé après avoir été joué (US21)
 
 
 @dataclass

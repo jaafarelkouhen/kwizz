@@ -17,7 +17,7 @@ UN_QUIZZ = [
 
 
 def test_creation_complete_avec_minuterie(con, monkeypatch):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     simuler_saisies(monkeypatch, *UN_QUIZZ, "o")
 
     cli.ecran_creer_quizz(con, admin)
@@ -29,7 +29,7 @@ def test_creation_complete_avec_minuterie(con, monkeypatch):
 
 
 def test_creation_annulee_n_enregistre_rien(con, monkeypatch, capsys):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     simuler_saisies(monkeypatch, *UN_QUIZZ, "n")
 
     cli.ecran_creer_quizz(con, admin)
@@ -39,7 +39,7 @@ def test_creation_annulee_n_enregistre_rien(con, monkeypatch, capsys):
 
 
 def test_champs_vides_et_duree_invalide_sont_redemandes(con, monkeypatch):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     saisies = ["", "Capitales",       # titre vide → redemandé
                "",                    # description vide : acceptée
                "abc", "",             # durée invalide → redemandée, puis Entrée = aucune

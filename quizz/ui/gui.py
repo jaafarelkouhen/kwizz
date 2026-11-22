@@ -118,7 +118,7 @@ class EcranConnexion(Ecran):
         boutons.pack(pady=12)
         tk.Button(boutons, text="Se connecter", width=14, command=self.connecter).pack(side="left", padx=4)
         tk.Button(boutons, text="Créer un compte", width=14, command=self.inscrire).pack(side="left", padx=4)
-        tk.Label(self, text="login : 3 caractères min. · mot de passe : 4 caractères min.", fg=GRIS).pack()
+        tk.Label(self, text="login : 3 à 30 caractères · mot de passe : 8 caractères min., une lettre et un chiffre", fg=GRIS).pack()
         self.message.pack(pady=8)
 
     def connecter(self):
@@ -274,9 +274,9 @@ class EcranListe(Ecran):
     def supprimer(self):
         q = self.selection()
         if q and messagebox.askyesno("Kwizz", f"Supprimer « {q.titre} » et tous ses scores ?", parent=self):
-            qs.supprimer_quizz(self.con, q.id_quizz)
+            gardees = qs.supprimer_quizz(self.con, q.id_quizz)
             self.rafraichir()
-            self.info("Quizz supprimé.")
+            self.info("Quizz archivé : l'historique des joueurs est gardé." if gardees else "Quizz supprimé.")
 
     def deconnecter(self):
         self.app.user = None
@@ -434,10 +434,12 @@ class EcranResultat(Ecran):
             if erreur:
                 self.erreur(str(erreur))
                 return
+            if not q.explication:
+                explications.garder(self.app.con, q, texte)
             self.message.config(text="")
             messagebox.showinfo("Pourquoi ?", f"{q.enonce}\n\n{texte}", parent=self)
 
-        executer_en_fond(self, lambda: explications.expliquer(q, self.reponses.get(q.id_question, set())), fini)
+        executer_en_fond(self, lambda: q.explication or explications.rediger(q), fini)
 
 
 # ---------------------------------------------------------------- historique (US07) et classement (US12)

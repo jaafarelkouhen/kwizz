@@ -33,7 +33,7 @@ def preparer(chemin: Path) -> dict:
         quizz = importer.lire_quizz(fichier)
         quizz.id_createur = admin
         qs.enregistrer_quizz(con, quizz)
-    joueurs = {login: auth.inscrire(con, login, "demo") for login in JOUEURS}
+    joueurs = {login: auth.creer_compte_demo(con, login, "demo") for login in JOUEURS}
     par_titre = {q.titre: qs.charger_quizz(con, q.id_quizz) for q in qs.lister_quizz(con)}
     for login, titre, justes in PARTIES:
         quizz = par_titre[titre]

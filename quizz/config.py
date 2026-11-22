@@ -4,6 +4,8 @@ Variables :
     ANTHROPIC_API_KEY  clé de l'API Claude (secrète)
     KWIZZ_IA           auto (défaut : IA active si une clé est présente) · oui (forcer) · non (désactiver)
     KWIZZ_MODELE       modèle Claude à utiliser (défaut : MODELE_PAR_DEFAUT)
+    GROQ_API_KEY       clé de l'API Groq, gratuite (secrète) : utilisée seulement s'il n'y a pas de clé Claude
+    KWIZZ_GROQ_MODELE  modèle Groq à utiliser (défaut : MODELE_GROQ_PAR_DEFAUT)
 """
 import os
 from dataclasses import dataclass
@@ -11,6 +13,7 @@ from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 MODELE_PAR_DEFAUT = "claude-opus-5-5"
+MODELE_GROQ_PAR_DEFAUT = "openai/gpt-oss-120b"
 
 
 @dataclass(frozen=True)
@@ -18,6 +21,8 @@ class ConfigIA:
     activee: bool
     cle_presente: bool
     modele: str
+    groq_cle: str = ""      # vide = pas de Groq
+    groq_modele: str = MODELE_GROQ_PAR_DEFAUT
 
 
 def charger_env(chemin: Path = RACINE / ".env") -> None:
@@ -36,4 +41,6 @@ def config_ia() -> ConfigIA:
     # « oui » sert quand l'accès passe par un profil (ant auth login) plutôt que par une clé
     activee = reglage != "non" and (cle or reglage == "oui")
     modele = os.environ.get("KWIZZ_MODELE", "").strip() or MODELE_PAR_DEFAUT
-    return ConfigIA(activee, cle, modele)
+    groq_cle = "" if reglage == "non" else os.environ.get("GROQ_API_KEY", "").strip()
+    groq_modele = os.environ.get("KWIZZ_GROQ_MODELE", "").strip() or MODELE_GROQ_PAR_DEFAUT
+    return ConfigIA(activee, cle, modele, groq_cle, groq_modele)

@@ -10,7 +10,7 @@ def simuler_saisies(monkeypatch, *saisies):
 
 
 def preparer(con):
-    admin = auth.inscrire(con, "prof", "1234", est_admin=True)
+    admin = auth.inscrire(con, "prof", "motdepasse1", est_admin=True)
     qs.enregistrer_quizz(con, Quizz("Maths", "Calcul", 60, [
         Question("2 + 2 ?", [Choix("4", True), Choix("5")])]))
     return admin

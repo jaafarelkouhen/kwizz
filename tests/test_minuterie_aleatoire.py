@@ -27,7 +27,7 @@ def test_temps_restant_avec_minuterie():
 
 
 def test_console_arrete_le_quizz_quand_le_temps_est_ecoule(con, monkeypatch, capsys):
-    joueur = auth.inscrire(con, "bob", "1234")
+    joueur = auth.inscrire(con, "bob", "motdepasse1")
     quizz_dix_questions(con, duree=30)
     horloge = iter([0, 0, 5, 5, 40, 40])         # le temps passe à 40 s après la 2e réponse
     monkeypatch.setattr(cli.time, "monotonic", lambda: next(horloge, 40))

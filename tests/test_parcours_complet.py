@@ -19,7 +19,7 @@ def test_demo_complete(con, monkeypatch, capsys):
         "5", str(EXEMPLE),                        # Importer (texte ou JSON)
         "9",                                      # Se déconnecter (menu admin : 8 actions + 1)
         # --- un joueur crée son compte et joue
-        "2", "alice", "mdp1", "mdp1",
+        "2", "alice", "motdepasse1", "motdepasse1",
         "1", "1", "n",                            # Passer un quizz → n°1 → ordre normal
         "2", "1", "3",                            # Rome ✔, Lisbonne ✔, Varsovie ✔
         "",                                       # pause après le score
@@ -40,5 +40,5 @@ def test_demo_complete(con, monkeypatch, capsys):
     assert "Score : 3/3" in sortie
     assert "alice" in sortie and "🥇" in sortie
     assert "À bientôt" in sortie
-    alice = auth.connecter(con, "alice", "mdp1")
+    alice = auth.connecter(con, "alice", "motdepasse1")
     assert [t.score for t in qs.historique(con, alice.id_utilisateur)] == [3]
